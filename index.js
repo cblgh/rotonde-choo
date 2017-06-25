@@ -9,19 +9,46 @@ var main = require("./templates/main.js");
 // initialize choo
 var app = choo();
 
+
 app.use(function(state, emitter) {
-    state.list = [];
-    fetch("http://rotonde.cblgh.org").then(function(response) { 
-        var contentType = response.headers.get("content-type");
-        if(contentType && contentType.indexOf("application/json") !== -1) {
-            return response.json().then(function(json) {
-                json.feed.map(function(entry) { entry.avatar = json.profile.avatar});
-                console.log(JSON.stringify(json.feed));
-                state.list = json.feed;
-                emitter.emit("render");
-            })
+    function fetchPortal(portal) {
+        return fetch("http://" + portal).then(function(response) { 
+            return response.json();
+        });
+    }
+
+    function compare(a, b) {
+        var first = parseInt(a.time);
+        var second = parseInt(b.time);
+        if (first < second) {
+            return 1;
+        } else if (first > second) {
+            return -1;
         }
+        return 0;
+    }
+
+    state.list = [];
+    fetchPortal("rotonde.cblgh.org").then(function(base) {
+        console.log(JSON.stringify(base.profile));
+        // for each portal i follow
+        base.portal.map(function (portalDomain) {
+            // get its contents
+            console.log("fetching", portalDomain);
+            fetchPortal(portalDomain).then(function(portal) {
+                // then process its entries
+                portal.feed.map(function(entry) {
+                    // adding its avatar to each entry
+                    entry.avatar = portal.profile.avatar;
+                    // and pushing it onto our timeline feed
+                    state.list.push(entry);
+                }); 
+                state.list.sort(compare);
+                emitter.emit("render");
+            });
+        });
     });
+
     emitter.on("evt", function(data) {
         console.log("HOLY SHIT, EVT!");
         if (data) { console.log("we even had some data", data); }
