@@ -30,10 +30,30 @@ body {
     color: @font-color;
     margin: 0;
 }
-
-.msgbox {
+.msg-container {
     display: flex;
     flex-direction: row;
+}
+.domain-container {
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+}
+.link-container {
+    margin: 5px;
+    justify-content: center;
+}
+.meta-container {
+    display: flex;
+    flex-direction: row;
+}
+.domain {
+    opacity: 0.5;
+    margin-top: -5px;
+}
+.msgbox {
+    display: flex;
+    flex-direction: column;
     margin: 15px;
 }
 @circle-width: 75px;
@@ -48,7 +68,7 @@ body {
 }
 .msg {
     font-size: 1.5em;
-    padding-top: 15px;
+    padding-top: 0px;
     padding-bottom: 15px;
     padding-left: 5px;
     display: flex;

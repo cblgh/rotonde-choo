@@ -5,7 +5,6 @@ var gulp = require("gulp"),
     minifycss = require("gulp-minify-css"),
     del = require("del");
 
-// var destination = "//WINTERMUTE/http-server/yearly"
 destination = "."
 gulp.task("less", function() {
     return gulp.src("./less/style.less")
