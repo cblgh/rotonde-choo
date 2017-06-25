@@ -1,18 +1,25 @@
 {
-    "name": "choo-choo-motherlover",
-    "version": "1.0.0",
-    "private": true,
-    "main": "index.js",
-    "scripts": {
-        "start": "nodemon -x budo index.js:bundle.js -p 3000 --no-debug -- -b bundle-collapser/plugin -g unassertify -g yo-yoify -g uglifyify"
-    },
-    "license": "MIT",
-    "dependencies": {
-        "budo": "^9.4.7",
-        "bundle-collapser": "^1.2.1",
-        "choo": "^5.1.4",
-        "uglifyify": "^3.0.4",
-        "unassertify": "^2.0.4",
-        "yo-yoify": "^3.7.0"
-    }
+  "name": "choo-choo-motherlover",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon -x budo index.js:bundle.js -p 3000 --no-debug -- -b bundle-collapser/plugin -g unassertify -g yo-yoify -g uglifyify"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "budo": "^9.4.7",
+    "bundle-collapser": "^1.2.1",
+    "choo": "^5.1.4",
+    "del": "^3.0.0",
+    "gulp": "~3.8.10",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-jade": "~0.11.0",
+    "gulp-less": "*",
+    "gulp-minify-css": "~0.4.3",
+    "less-middleware": "^2.2.0",
+    "uglifyify": "^3.0.4",
+    "unassertify": "^2.0.4",
+    "yo-yoify": "^3.7.0"
+  }
 }

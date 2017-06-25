@@ -30,7 +30,6 @@ app.use(function(state, emitter) {
 
     state.list = [];
     fetchPortal("rotonde.cblgh.org").then(function(base) {
-        console.log(JSON.stringify(base.profile));
         // for each portal i follow
         base.portal.map(function (portalDomain) {
             // get its contents
