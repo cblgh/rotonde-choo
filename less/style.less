@@ -34,18 +34,25 @@ body {
 .msgbox {
     display: flex;
     flex-direction: row;
+    margin: 15px;
 }
+@circle-width: 75px;
 .avatar {
-    width: 70px;
-    height: 70px;
+    width: @circle-width;
+    height: @circle-width;
+    border-radius: @circle-width/2;
 }
 .msg {
-    font-size: 2em;
+    font-size: 1.5em;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 5px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    margin-left: 15px;
+    margin-left: 5px;
+    padding-right: 60px;
 }
 
 // @media (min-width: 768px) {

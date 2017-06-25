@@ -39,9 +39,11 @@ app.use(function(state, emitter) {
                 portal.feed.map(function(entry) {
                     // adding its avatar to each entry
                     entry.avatar = portal.profile.avatar;
+                    entry.color = portal.profile.color;
                     // and pushing it onto our timeline feed
                     state.list.push(entry);
                 }); 
+                // sort entries with newest at the top of the page
                 state.list.sort(compare);
                 emitter.emit("render");
             });
@@ -62,7 +64,9 @@ console.log(main());
 function messageBox(entry) {
     return html`
         <div class="msgbox">
-            <img src=${entry.avatar} width="100" class="avatar">
+            <a href="/rotonde.cblgh.org">
+                <div style="background: ${entry.color}!important" class="avatar"></div>
+            </a>
             <div class="msg">${entry.text}</div>
         </div>
     `
@@ -75,6 +79,10 @@ app.route("/", function(state) {
             ${state.list.map(messageBox)}
         </div>
     `
+});
+
+app.route("/:base", function(state) {
+    console.log(state.params.base);
 });
 
 // start app
