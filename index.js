@@ -63,10 +63,8 @@ console.log(main());
 
 function messageBox(entry) {
     return html`
-        <div class="msgbox">
-            <a href="/rotonde.cblgh.org">
-                <div style="background: ${entry.color}!important" class="avatar"></div>
-            </a>
+        <div style="background-color: ${entry.color}" class="msgbox">
+            <img class="avatar" src="${entry.avatar}">
             <div class="msg">${entry.text}</div>
         </div>
     `
