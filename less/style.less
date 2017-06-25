@@ -38,9 +38,13 @@ body {
 }
 @circle-width: 75px;
 .avatar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     width: @circle-width;
     height: @circle-width;
     border-radius: @circle-width/2;
+    margin: 5px;
 }
 .msg {
     font-size: 1.5em;
@@ -51,7 +55,6 @@ body {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    margin-left: 5px;
     padding-right: 60px;
 }
 
