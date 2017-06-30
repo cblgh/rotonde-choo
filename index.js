@@ -8,12 +8,13 @@ var html = require("choo/html")
 var app = choo();
 
 
+function fetchPortal(portal) {
+    return fetch("http://" + portal).then(function(response) { 
+        return response.json();
+    });
+}
+
 app.use(function(state, emitter) {
-    function fetchPortal(portal) {
-        return fetch("http://" + portal).then(function(response) { 
-            return response.json();
-        });
-    }
 
     function compare(a, b) {
         var first = parseInt(a.time);
@@ -78,9 +79,11 @@ function messageBox(entry) {
                 <img class="avatar" src="${entry.avatar}">
                 <div class="msg">${entry.text}</div>
             </div>
+            <div class="time">${new Date(entry.time * 1000).toDateString()}</div>
         </div>
     `
 }
+
 
 // create a route
 app.route("/", function(state) {
@@ -91,8 +94,21 @@ app.route("/", function(state) {
     `
 });
 
-app.route("/:base", function(state) {
-    console.log(state.params.base);
+// take another's feed as input/url.param
+// present them with boxes for input
+// show resulting rotonde.json for them to copy somewhere else
+app.route("/generate", function(state) {
+    // fetchPortal(state.params.portal).then(function(resp) {
+    //     return messageBox(resp.feed[0])
+    // });
+
+    return html`
+        <div class="generate-container">
+        <input placeholder="ENTRY">
+        <input>
+        <input>
+        </div>
+    `
 });
 
 // start app
