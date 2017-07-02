@@ -13,7 +13,11 @@ function fetchPortal(portal) {
     if (portal.indexOf("http") < 0) {
         portal = "http://" + portal;
     }
-    return fetch(portal).then(function(response) { 
+    return fetch(portal)
+        .catch(function(err) {
+            return err;
+        })
+        .then(function(response) { 
         return response.json();
     });
 }
@@ -31,7 +35,7 @@ app.use(function(state, emitter) {
         return 0;
     }
 
-    process("rotonde.cblgh.org");
+    process("rotonde.cblgh.org"); // set initial portal to mine
     function process(portalUrl) {
         state.list = []; // clear list
         fetchPortal(portalUrl).then(function(base) {
@@ -72,20 +76,11 @@ function link(entry, prop, text) {
     }
 }
 
-
-
 // create a route
 app.route("/", function(state, emit) {
     function domainClick(e) {
-        console.log("WOW DOMAIN CLICK!");
         emit("newPortal", e.target.innerHTML.substr(1));
     }
-
-    return html`
-        <div class="container">
-            ${state.list.map(messageBox)}
-        </div>
-    `
 
     function messageBox(entry) {
         return html`
@@ -105,6 +100,11 @@ app.route("/", function(state, emit) {
             </div>
         `
     }
+    return html`
+        <div class="container">
+            ${state.list.map(messageBox)}
+        </div>
+    `
 });
 
 
@@ -112,10 +112,6 @@ app.route("/", function(state, emit) {
 // present them with boxes for input
 // show resulting rotonde.json for them to copy somewhere else
 app.route("/generate", function(state) {
-    // fetchPortal(state.params.portal).then(function(resp) {
-    //     return messageBox(resp.feed[0])
-    // });
-
     return html`
         <div class="generate-wrapper">
             <div class="generate-container">
@@ -132,17 +128,25 @@ app.route("/generate", function(state) {
 });
 
 function jsonClick(e) {
-    console.log(e.target);
     e.target.select();
 }
 
 function portalClick() {
-    fetchPortal($("url").value).then(function(portal) {
-        var area = $("json-area");
-        area.value = JSON.stringify(portal); // fill with stringified json
-        area.scrollTop = area.scrollHeight; // scroll to bottom of textarea
-        console.log(portal);
+    var area = $("json-area");
+    var url = $("url").value;
+    try {
+    fetchPortal(url)
+        .then(function(portal) {
+            if (portal === "undefined") {
+                area.value = "couldn't fetch " + url + "\n" + err;
+                return;
+            }
+            area.value = JSON.stringify(portal); // fill with stringified json
+            area.scrollTop = area.scrollHeight; // scroll to bottom of textarea
     });
+    } catch (err) {
+        console.log("A MOTHERFLOWING ERROR", err);
+    }
 }
 
 function addText() {
