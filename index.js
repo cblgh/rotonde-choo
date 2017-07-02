@@ -10,7 +10,10 @@ var app = choo();
 var $ = document.getElementById.bind(document);
 
 function fetchPortal(portal) {
-    return fetch("http://" + portal).then(function(response) { 
+    if (portal.indexOf("http") < 0) {
+        portal = "http://" + portal;
+    }
+    return fetch(portal).then(function(response) { 
         return response.json();
     });
 }
