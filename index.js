@@ -31,33 +31,37 @@ app.use(function(state, emitter) {
         return 0;
     }
 
-    state.list = [];
-    fetchPortal("rotonde.cblgh.org").then(function(base) {
-        // for each portal i follow
-        base.portal.map(function (portalDomain) {
-            // get its contents
-            console.log("fetching", portalDomain);
-            fetchPortal(portalDomain).then(function(portal) {
-                // then process its entries
-                portal.feed.map(function(entry) {
-                    // adding its avatar to each entry
-                    entry.avatar = portal.profile.avatar;
-                    entry.color = portal.profile.color;
-                    entry.portal = portalDomain;
-                    entry.name = portal.profile.name;
-                    // and pushing it onto our timeline feed
-                    state.list.push(entry);
-                }); 
-                // sort entries with newest at the top of the page
-                state.list.sort(compare);
-                emitter.emit("render");
+    process("rotonde.cblgh.org");
+    function process(portalUrl) {
+        state.list = []; // clear list
+        fetchPortal(portalUrl).then(function(base) {
+            // for each portal i follow
+            base.portal.map(function (portalDomain) {
+                // get its contents
+                console.log("fetching", portalDomain);
+                fetchPortal(portalDomain).then(function(portal) {
+                    // then process its entries
+                    portal.feed.map(function(entry) {
+                        // adding its avatar to each entry
+                        entry.avatar = portal.profile.avatar;
+                        entry.color = portal.profile.color;
+                        entry.portal = portalDomain;
+                        entry.name = portal.profile.name;
+                        // and pushing it onto our timeline feed
+                        state.list.push(entry);
+                    }); 
+                    // sort entries with newest at the top of the page
+                    state.list.sort(compare);
+                    emitter.emit("render");
+                });
             });
         });
-    });
+    }
 
-    emitter.on("evt", function(data) {
+    emitter.on("newPortal", function(data) {
         if (data) { console.log("we even had some data", data); }
         // redraw page
+        process(data);
         emitter.emit("render");
     });
 })
@@ -68,34 +72,41 @@ function link(entry, prop, text) {
     }
 }
 
-function messageBox(entry) {
-    return html`
-        <div style="background-color: ${entry.color}" class="msgbox">
-            <div class="meta-container">
-                <div class="domain-container">
-                    <div class="nick">${entry.name}</div>
-                    <div class="domain">@${entry.portal}</div>
-                </div>
-                <div class="link-container">${link(entry, "url", "link")} ${link(entry, "media", "media")}</div>
-            </div>
-            <div class="msg-container">
-                <img class="avatar" src="${entry.avatar}">
-                <div class="msg">${entry.text}</div>
-            </div>
-            <div class="time">${new Date(entry.time * 1000).toDateString()}</div>
-        </div>
-    `
-}
 
 
 // create a route
-app.route("/", function(state) {
+app.route("/", function(state, emit) {
+    function domainClick(e) {
+        console.log("WOW DOMAIN CLICK!");
+        emit("newPortal", e.target.innerHTML.substr(1));
+    }
+
     return html`
         <div class="container">
             ${state.list.map(messageBox)}
         </div>
     `
+
+    function messageBox(entry) {
+        return html`
+            <div style="background-color: ${entry.color}" class="msgbox">
+                <div class="meta-container">
+                    <div class="domain-container">
+                        <div class="nick">${entry.name}</div>
+                        <div class="domain" onclick=${domainClick}>@${entry.portal}</div>
+                    </div>
+                    <div class="link-container">${link(entry, "url", "link")} ${link(entry, "media", "media")}</div>
+                </div>
+                <div class="msg-container">
+                    <img class="avatar" src="${entry.avatar}">
+                    <div class="msg">${entry.text}</div>
+                </div>
+                <div class="time">${new Date(entry.time * 1000).toDateString()}</div>
+            </div>
+        `
+    }
 });
+
 
 // take another's feed as input/url.param
 // present them with boxes for input
