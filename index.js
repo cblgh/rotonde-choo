@@ -7,6 +7,7 @@ var html = require("choo/html")
 // initialize choo
 var app = choo();
 
+var $ = document.getElementById.bind(document);
 
 function fetchPortal(portal) {
     return fetch("http://" + portal).then(function(response) { 
@@ -52,7 +53,6 @@ app.use(function(state, emitter) {
     });
 
     emitter.on("evt", function(data) {
-        console.log("HOLY SHIT, EVT!");
         if (data) { console.log("we even had some data", data); }
         // redraw page
         emitter.emit("render");
@@ -103,13 +103,41 @@ app.route("/generate", function(state) {
     // });
 
     return html`
-        <div class="generate-container">
-        <input placeholder="ENTRY">
-        <input>
-        <input>
+        <div class="generate-wrapper">
+            <div class="generate-container">
+                <input id="url" class="input-url" placeholder="portal url e.g. rotonde.cblgh.org">
+                <textarea id="json-area" class="json-area" placeholder="<rotonde.json>" onclick=${jsonClick} readonly></textarea>
+                <input id="text" class="entry-text" placeholder="entry text">
+            </div>
+            <div>
+                <button onclick=${addText}>add text</button>
+                <button onclick=${portalClick}>load portal</button>
+            </div>
         </div>
     `
 });
+
+function jsonClick(e) {
+    console.log(e.target);
+    e.target.select();
+}
+
+function portalClick() {
+    fetchPortal($("url").value).then(function(portal) {
+        var area = $("json-area");
+        area.value = JSON.stringify(portal); // fill with stringified json
+        area.scrollTop = area.scrollHeight; // scroll to bottom of textarea
+        console.log(portal);
+    });
+}
+
+function addText() {
+    var time = parseInt(new Date() / 1000);
+    var rotonde = JSON.parse($("json-area").value);
+    rotonde.feed.push({text: $("text").value, time: time});
+    $("json-area").value = JSON.stringify(rotonde);
+    $("text").value = ""; // clear input box
+}
 
 // start app
 app.mount("div");
