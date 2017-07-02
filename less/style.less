@@ -25,15 +25,21 @@ a {
 }
 
 body {
+    display: flex;
+    justify-content: center;
     background-color: @bg-color;
     font-family: GeosansLight;
     color: @font-color;
     margin: 0;
 }
 .time {
-    margin: 5px;
+    display: flex;
     margin-top: 0;
-    opacity: 0.5;
+    padding: 5px;
+    opacity: 0.8;
+    background-color: #131313;
+    margin-left: auto;
+    // width: 130px;
 }
 .msg-container {
     display: flex;
@@ -42,7 +48,10 @@ body {
 .domain-container {
     display: flex;
     flex-direction: column;
-    margin: 5px;
+    padding: 5px;
+    margin-bottom: 5px;
+    background-color: #131313;
+    opacity: 0.8;
 }
 .link-container {
     margin: 5px;
@@ -60,7 +69,91 @@ body {
     display: flex;
     flex-direction: column;
     margin: 15px;
+    max-width: 850px;
 }
+.generate-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-top: 50px;
+}
+.generate-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@pirate-off-white: #e3e3e3;
+@pirate-dark-gray: #2d2d2d;
+.input-url, .entry-text, .json-area {
+    font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
+    color: #f2f2f2;
+    background: #313131;
+    border-style: none;
+    padding: 5px;
+    border-color: black;
+    width: 400px;
+    .rounded-corners(5px);
+    margin-bottom: 5px;
+}
+.json-area {
+    height: 200px;
+}
+button {
+    .test-btn();
+}
+
+
+.rounded-corners (@radius: 5px) {
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  -ms-border-radius: @radius;
+  -o-border-radius: @radius;
+  border-radius: @radius;
+}
+
+.box-shadow (@x: 0; @y: 0; @blur: 1px; @color: #000) {
+  -moz-box-shadow: @arguments;
+  -webkit-box-shadow: @arguments;
+  box-shadow: @arguments;
+}
+
+.clickable(@color; @size: 18px;){
+	// font-weight: bold;
+	// text-shadow: 1px 1px @color;
+	// font-size: @size;
+	cursor: pointer;
+
+	&:hover {
+		background-color: (@color + #050505);
+	}
+}
+
+
+.test-btn {
+	.rounded-corners(5px);
+	// .clickable((@pirate-dark-gray + #222));
+    font-size: 20px;
+	.box-shadow(0px; 1px);
+
+	color: @pirate-off-white;
+	background-color: @pirate-dark-gray;
+	border: 2px solid (@pirate-dark-gray + #222);
+	padding: 5px 15px 6px;
+	margin: 5px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: @pirate-off-white;
+        color: @pirate-dark-gray;
+    }
+
+    // active feels weird on mobile devices
+    &:active {
+      background-color: (@pirate-off-white + #333);
+      color: @pirate-dark-gray;
+    }
+}
+
 @circle-width: 75px;
 .avatar {
     display: flex;
