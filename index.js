@@ -63,12 +63,11 @@ app.use(function(state, emitter) {
     }
 
     emitter.on("newPortal", function(data) {
-        if (data) { console.log("we even had some data", data); }
         // redraw page
         process(data);
         emitter.emit("render");
     });
-})
+});
 
 function link(entry, prop, text) {
     if (entry[prop]) {
@@ -78,10 +77,6 @@ function link(entry, prop, text) {
 
 // create a route
 app.route("/", function(state, emit) {
-    function domainClick(e) {
-        emit("newPortal", e.target.innerHTML.substr(1));
-    }
-
     function messageBox(entry) {
         return html`
             <div style="background-color: ${entry.color}" class="msgbox">
@@ -100,13 +95,17 @@ app.route("/", function(state, emit) {
             </div>
         `
     }
+
+    function domainClick(e) {
+        emit("newPortal", e.target.innerHTML.substr(1));
+    }
+
     return html`
         <div class="container">
             ${state.list.map(messageBox)}
         </div>
     `
 });
-
 
 // take another's feed as input/url.param
 // present them with boxes for input
@@ -127,6 +126,7 @@ app.route("/generate", function(state) {
     `
 });
 
+// select contents of the textarea that was clicked on
 function jsonClick(e) {
     e.target.select();
 }
@@ -135,7 +135,7 @@ function portalClick() {
     var area = $("json-area");
     var url = $("url").value;
     try {
-    fetchPortal(url)
+        fetchPortal(url)
         .then(function(portal) {
             if (portal === "undefined") {
                 area.value = "couldn't fetch " + url + "\n" + err;
