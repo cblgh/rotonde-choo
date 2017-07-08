@@ -18,6 +18,7 @@
     "gulp-less": "*",
     "gulp-minify-css": "~0.4.3",
     "less-middleware": "^2.2.0",
+    "nodemon": "^1.11.0",
     "uglifyify": "^3.0.4",
     "unassertify": "^2.0.4",
     "yo-yoify": "^3.7.0"

@@ -1,11 +1,10 @@
 var gulp = require("gulp"),
     less = require("gulp-less"),
     autoprefixer = require("gulp-autoprefixer"),
-    jade = require("gulp-jade"),
     minifycss = require("gulp-minify-css"),
     del = require("del");
 
-destination = "."
+var destination = "."
 gulp.task("less", function() {
     return gulp.src("./less/style.less")
     .pipe(less())
@@ -16,18 +15,11 @@ gulp.task("less", function() {
     .pipe(gulp.dest(destination + "/stylesheets/"));
 });
 
-gulp.task("jade", function() {
-    return gulp.src("./*.jade")
-    .pipe(jade())
-    .pipe(gulp.dest(destination));
-});
-
 gulp.task("watch", function() {
-    gulp.start("less", "jade");
+    gulp.start("less");
     gulp.watch("./less/*.less", ["less"]);
-    gulp.watch("./*.jade", ["jade"]);
 });
 
 gulp.task("default", function() {
-    gulp.start("less", "jade");
+    gulp.start("less");
 });
