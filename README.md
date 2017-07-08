@@ -1,7 +1,7 @@
 # rotonde-choo
 a rotonde client written with choo 🚂
 
-![client](https://cblgh.org/i/2017-07/1830mQX.png)
+![client](http://i.imgur.com/wv99WE6.png)
 
 ## Getting started
 ### `npm install && npm start`
