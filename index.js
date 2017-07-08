@@ -23,19 +23,8 @@ function fetchPortal(portal) {
 }
 
 app.use(function(state, emitter) {
-
-    function compare(a, b) {
-        var first = parseInt(a.time);
-        var second = parseInt(b.time);
-        if (first < second) {
-            return 1;
-        } else if (first > second) {
-            return -1;
-        }
-        return 0;
-    }
-
     process("rotonde.cblgh.org"); // set initial portal to mine
+
     function process(portalUrl) {
         state.list = []; // clear list
         fetchPortal(portalUrl).then(function(base) {
@@ -46,7 +35,7 @@ app.use(function(state, emitter) {
                 fetchPortal(portalDomain).then(function(portal) {
                     // then process its entries
                     portal.feed.map(function(entry) {
-                        // adding its avatar to each entry
+                        // adding its properties to each entry
                         entry.avatar = portal.profile.avatar;
                         entry.color = portal.profile.color;
                         entry.portal = portalDomain;
@@ -60,6 +49,17 @@ app.use(function(state, emitter) {
                 });
             });
         });
+    }
+
+    function compare(a, b) {
+        var first = parseInt(a.time);
+        var second = parseInt(b.time);
+        if (first < second) {
+            return 1;
+        } else if (first > second) {
+            return -1;
+        }
+        return 0;
     }
 
     emitter.on("newPortal", function(data) {
@@ -107,9 +107,8 @@ app.route("/", function(state, emit) {
     `
 });
 
-// take another's feed as input/url.param
-// present them with boxes for input
-// show resulting rotonde.json for them to copy somewhere else
+// take another's feed and present them with boxes for input
+// show the resulting rotonde.json for them to copy somewhere else
 app.route("/generate", function(state) {
     return html`
         <div class="generate-wrapper">
@@ -131,6 +130,7 @@ function jsonClick(e) {
     e.target.select();
 }
 
+// load portal for /generate
 function portalClick() {
     var area = $("json-area");
     var url = $("url").value;
