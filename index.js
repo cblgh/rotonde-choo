@@ -101,8 +101,16 @@ app.route("/", function(state, emit) {
     }
 
     return html`
-        <div class="container">
-            ${state.list.map(messageBox)}
+        <div>
+            <div class="container">
+                <div>
+                    ${state.list.map(messageBox)}
+                </div>
+            </div>
+            <div class="input-bar">
+                <div class="console-cursor">${">"}</div>
+                <input class="console">
+            </div>
         </div>
     `
 });
