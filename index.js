@@ -112,7 +112,6 @@ app.route("/", function(state, emit) {
                 <input class="console">
             </div>
         </div>
-        <div class="input-bar">input hello</div>
     `
 });
 

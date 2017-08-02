@@ -5,6 +5,10 @@
     font-family: GeosansLight;
     src: url("GeosansLight.ttf");
 }
+@font-face {
+    font-family: Inconsolata, monospace;
+    src: url("Inconsolata-Bold.ttf");
+}
 
 html {
     overflow-y: scroll;
@@ -79,20 +83,24 @@ a {
 .console-cursor {
     margin-left: 5px;
     margin-right: 10px;
+    font-family: Inconsolata, monospace;
 }
 
 .console {
-    font-size: 20pt;
+    font-size: 15pt;
     border: none;
     color: #f2f2f2;
     background-color: #131313;
+    font-family: Inconsolata, monospace;
+    width: 100%;
 }
 
 .input-bar {
+    font-family: Inconsolata, monospace;
     display: flex;
     position: fixed;
     bottom: 0;
-    font-size: 30pt;
+    font-size: 15pt;
     color: #f2f2f2;
     background-color: #131313;
     width: 100%;
