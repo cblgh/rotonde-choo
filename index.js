@@ -1,14 +1,12 @@
 // import choo
 var choo = require("choo")
-
 // import choo's template helper
 var html = require("choo/html")
-
 // initialize choo
 var app = choo()
-
+// load input handler
 var handleInput = require("./handleInput.js")
-
+// alias document.getElementById for convenience
 var $ = document.getElementById.bind(document)
 
 function fetchPortal(portal) {
@@ -128,56 +126,6 @@ function checkInput(evt) {
         $("console").value = "" 
         handleInput(message)
     }
-}
-
-// take another's feed and present them with boxes for input
-// show the resulting rotonde.json for them to copy somewhere else
-app.route("/generate", function(state) {
-    return html`
-        <div class="generate-wrapper">
-            <div class="generate-container">
-                <input id="url" class="input-url" placeholder="portal url e.g. rotonde.cblgh.org">
-                <textarea id="json-area" class="json-area" placeholder="<rotonde.json>" onclick=${jsonClick} readonly></textarea>
-                <input id="text" class="entry-text" placeholder="entry text">
-            </div>
-            <div>
-                <button onclick=${addText}>add text</button>
-                <button onclick=${portalClick}>load portal</button>
-            </div>
-        </div>
-    `
-})
-
-// select contents of the textarea that was clicked on
-function jsonClick(e) {
-    e.target.select()
-}
-
-// load portal for /generate
-function portalClick() {
-    var area = $("json-area")
-    var url = $("url").value
-    try {
-        fetchPortal(url)
-        .then(function(portal) {
-            if (portal === "undefined") {
-                area.value = "couldn't fetch " + url + "\n" + err
-                return
-            }
-            area.value = JSON.stringify(portal) // fill with stringified json
-            area.scrollTop = area.scrollHeight // scroll to bottom of textarea
-    })
-    } catch (err) {
-        console.log("A MOTHERFLOWING ERROR", err)
-    }
-}
-
-function addText() {
-    var time = parseInt(new Date() / 1000)
-    var rotonde = JSON.parse($("json-area").value)
-    rotonde.feed.push({text: $("text").value, time: time})
-    $("json-area").value = JSON.stringify(rotonde)
-    $("text").value = "" // clear input box
 }
 
 // start app
