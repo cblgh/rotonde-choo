@@ -7,7 +7,7 @@ var html = require("choo/html")
 // initialize choo
 var app = choo();
 
-// var input = require("./handleInput.js")
+var handleInput = require("./handleInput.js")
 
 var $ = document.getElementById.bind(document);
 
@@ -112,15 +112,7 @@ app.route("/", function(state, emit) {
             <div class="bar-container">
                 <div class="input-bar">
                     <div class="console-cursor">${">"}</div>
-                    <input onkeypress=${checkInput} id="console">
-                </div>
-                <div class="stats-bar">
-                    <div class="stats-msg">
-                        currently in ~
-                    </div>
-                    <div class="stats-msg">
-                        uptime 2 hours
-                    </div>
+                    <input autofocus placeholder="~/rotonde/rotonde.json  following 5  23 days ago  2 hours" onkeypress=${checkInput} id="console">
                 </div>
             </div>
         </div>
@@ -132,9 +124,9 @@ function checkInput(evt) {
     if (evt.keyCode === 13) {
         // get the message 
         var message = $("console").value;
-        console.log(message)
         // clear console
         $("console").value = ""; 
+        handleInput(message)
     }
 }
 
