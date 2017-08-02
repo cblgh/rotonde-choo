@@ -5,75 +5,75 @@ var choo = require("choo")
 var html = require("choo/html")
 
 // initialize choo
-var app = choo();
+var app = choo()
 
 var handleInput = require("./handleInput.js")
 
-var $ = document.getElementById.bind(document);
+var $ = document.getElementById.bind(document)
 
 function fetchPortal(portal) {
     if (portal.indexOf("http") < 0) {
-        portal = "http://" + portal;
+        portal = "http://" + portal
     }
     return fetch(portal)
         .catch(function(err) {
-            return err;
+            return err
         })
         .then(function(response) { 
-        return response.json();
-    });
+        return response.json()
+    })
 }
 
 app.use(function(state, emitter) {
-    process("rotonde.cblgh.org"); // set initial portal to mine
+    process("rotonde.cblgh.org") // set initial portal to mine
 
     function process(portalUrl) {
-        state.list = []; // clear list
+        state.list = [] // clear list
         fetchPortal(portalUrl).then(function(base) {
             // for each portal i follow
             base.portal.map(function (portalDomain) {
                 // get its contents
-                console.log("fetching", portalDomain);
+                console.log("fetching", portalDomain)
                 fetchPortal(portalDomain).then(function(portal) {
                     // then process its entries
                     portal.feed.map(function(entry) {
                         // adding its properties to each entry
-                        entry.avatar = portal.profile.avatar;
-                        entry.color = portal.profile.color;
-                        entry.portal = portalDomain;
-                        entry.name = portal.profile.name;
+                        entry.avatar = portal.profile.avatar
+                        entry.color = portal.profile.color
+                        entry.portal = portalDomain
+                        entry.name = portal.profile.name
                         // and pushing it onto our timeline feed
-                        state.list.push(entry);
-                    }); 
+                        state.list.push(entry)
+                    }) 
                     // sort entries with newest at the top of the page
-                    state.list.sort(compare);
-                    emitter.emit("render");
-                });
-            });
-        });
+                    state.list.sort(compare)
+                    emitter.emit("render")
+                })
+            })
+        })
     }
 
     function compare(a, b) {
-        var first = parseInt(a.time);
-        var second = parseInt(b.time);
+        var first = parseInt(a.time)
+        var second = parseInt(b.time)
         if (first < second) {
-            return 1;
+            return 1
         } else if (first > second) {
-            return -1;
+            return -1
         }
-        return 0;
+        return 0
     }
 
     emitter.on("newPortal", function(data) {
         // redraw page
-        process(data);
-        emitter.emit("render");
-    });
-});
+        process(data)
+        emitter.emit("render")
+    })
+})
 
 function link(entry, prop, text) {
     if (entry[prop]) {
-        return html`<a href="${entry[prop]}">${text}</a>`;
+        return html`<a href="${entry[prop]}">${text}</a>`
     }
 }
 
@@ -99,7 +99,7 @@ app.route("/", function(state, emit) {
     }
 
     function domainClick(e) {
-        emit("newPortal", e.target.innerHTML.substr(1));
+        emit("newPortal", e.target.innerHTML.substr(1))
     }
 
     return html`
@@ -117,15 +117,15 @@ app.route("/", function(state, emit) {
             </div>
         </div>
     `
-});
+})
 
 function checkInput(evt) {
     // enter was pressed
     if (evt.keyCode === 13) {
         // get the message 
-        var message = $("console").value;
+        var message = $("console").value
         // clear console
-        $("console").value = ""; 
+        $("console").value = "" 
         handleInput(message)
     }
 }
@@ -146,39 +146,39 @@ app.route("/generate", function(state) {
             </div>
         </div>
     `
-});
+})
 
 // select contents of the textarea that was clicked on
 function jsonClick(e) {
-    e.target.select();
+    e.target.select()
 }
 
 // load portal for /generate
 function portalClick() {
-    var area = $("json-area");
-    var url = $("url").value;
+    var area = $("json-area")
+    var url = $("url").value
     try {
         fetchPortal(url)
         .then(function(portal) {
             if (portal === "undefined") {
-                area.value = "couldn't fetch " + url + "\n" + err;
-                return;
+                area.value = "couldn't fetch " + url + "\n" + err
+                return
             }
-            area.value = JSON.stringify(portal); // fill with stringified json
-            area.scrollTop = area.scrollHeight; // scroll to bottom of textarea
-    });
+            area.value = JSON.stringify(portal) // fill with stringified json
+            area.scrollTop = area.scrollHeight // scroll to bottom of textarea
+    })
     } catch (err) {
-        console.log("A MOTHERFLOWING ERROR", err);
+        console.log("A MOTHERFLOWING ERROR", err)
     }
 }
 
 function addText() {
-    var time = parseInt(new Date() / 1000);
-    var rotonde = JSON.parse($("json-area").value);
-    rotonde.feed.push({text: $("text").value, time: time});
-    $("json-area").value = JSON.stringify(rotonde);
-    $("text").value = ""; // clear input box
+    var time = parseInt(new Date() / 1000)
+    var rotonde = JSON.parse($("json-area").value)
+    rotonde.feed.push({text: $("text").value, time: time})
+    $("json-area").value = JSON.stringify(rotonde)
+    $("text").value = "" // clear input box
 }
 
 // start app
-app.mount("div");
+app.mount("div")
