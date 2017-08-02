@@ -86,11 +86,11 @@ a {
     font-family: Inconsolata, monospace;
 }
 
-.console {
+#console {
     font-size: 15pt;
     border: none;
     color: #f2f2f2;
-    background-color: #131313;
+    background-color: @bg-color;
     font-family: Inconsolata, monospace;
     width: 100%;
 }
@@ -98,15 +98,27 @@ a {
 .input-bar {
     font-family: Inconsolata, monospace;
     display: flex;
-    position: fixed;
-    bottom: 0;
     font-size: 15pt;
-    color: #f2f2f2;
-    background-color: #131313;
     width: 100%;
-    height: 60px;
+    height: 40px;
     align-items: center; 
     padding-left: 5px;
+}
+.bar-container {
+    color: #f2f2f2;
+    background-color: @bg-color;
+    display: flex;
+    width: 100%;
+    height: 60px;
+    flex-direction: column;
+    bottom: 0;
+    position: fixed;
+}
+.stats-bar {
+    flex-direction: row;
+}
+.stats-msg {
+    display: inline-block;
 }
 
 @circle-width: 75px;

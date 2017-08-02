@@ -7,6 +7,8 @@ var html = require("choo/html")
 // initialize choo
 var app = choo();
 
+// var input = require("./handleInput.js")
+
 var $ = document.getElementById.bind(document);
 
 function fetchPortal(portal) {
@@ -107,13 +109,34 @@ app.route("/", function(state, emit) {
                     ${state.list.map(messageBox)}
                 </div>
             </div>
-            <div class="input-bar">
-                <div class="console-cursor">${">"}</div>
-                <input class="console">
+            <div class="bar-container">
+                <div class="input-bar">
+                    <div class="console-cursor">${">"}</div>
+                    <input onkeypress=${checkInput} id="console">
+                </div>
+                <div class="stats-bar">
+                    <div class="stats-msg">
+                        currently in ~
+                    </div>
+                    <div class="stats-msg">
+                        uptime 2 hours
+                    </div>
+                </div>
             </div>
         </div>
     `
 });
+
+function checkInput(evt) {
+    // enter was pressed
+    if (evt.keyCode === 13) {
+        // get the message 
+        var message = $("console").value;
+        console.log(message)
+        // clear console
+        $("console").value = ""; 
+    }
+}
 
 // take another's feed and present them with boxes for input
 // show the resulting rotonde.json for them to copy somewhere else
