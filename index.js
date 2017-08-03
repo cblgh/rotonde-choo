@@ -8,6 +8,8 @@ var app = choo()
 var handleInput = require("./handleInput.js")
 // alias document.getElementById for convenience
 var $ = document.getElementById.bind(document)
+//  manage files and URLs using their default applications
+var shell = require("electron").shell
 
 function fetchPortal(portal) {
     if (portal.indexOf("http") < 0) {
@@ -71,8 +73,14 @@ app.use(function(state, emitter) {
 
 function link(entry, prop, text) {
     if (entry[prop]) {
-        return html`<a href="${entry[prop]}">${text}</a>`
+        return html`<a href="${entry[prop]}" onclick=${loadOutsideApp}>${text}</a>`
     }
+}
+
+// open links that are clicked in the electron app using the default browser instead
+function loadOutsideApp(evt) {
+    evt.preventDefault()
+    shell.openExternal(evt.target.href)
 }
 
 // create a route
