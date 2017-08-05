@@ -4,12 +4,52 @@ var choo = require("choo")
 var html = require("choo/html")
 // initialize choo
 var app = choo()
-// load input handler
-var handleInput = require("./handleInput.js")
 // alias document.getElementById for convenience
 var $ = document.getElementById.bind(document)
 //  manage files and URLs using their default applications
 var shell = require("electron").shell
+var path = require("path")
+var util = require("./rotonde-cli/rotonde-utils.js")
+// to handle the rotonde specific stuff
+var rotonde = require("./rotonde-cli/rotonde-lib.js")
+// to connect rotonde with dat
+var hyperotonde = require("./node_modules/hyperotonde/hyperotonde.js")
+archive = hyperotonde(path.resolve(util.dir, "rotonde.archive"))
+
+function handleInput(message) {
+    var commands = {"save": rotonde.save, "set": rotonde.attribute, 
+        "follow": rotonde.follow, "unfollow": rotonde.unfollow}
+    // we're dealing with a command (or a typo)
+    if (message.charAt(0) === "/") {
+        var parts = message.substr(1).split(" ")
+        var cmd = parts.splice(0, 1)[0]
+        var content = parts
+
+        if (cmd in commands) {
+            // set <color|location|name>=<value> for properties
+            if (cmd === "set" && content.length > 1) {
+                var attribute = content.splice(0, 1)[0]
+                var value = content.join(" ")
+                rotonde.set(attribute, value)
+            } else if (cmd === "save") {
+                var jsonLocation = content.join(" ")
+                // save to file
+                rotonde.save(jsonLocation)
+            }  else {
+                content = content.join(" ")
+                commands[cmd](content)
+            }
+        }
+    // don't write any messages starting with / as 99% time they'll just be typos of commands
+    } else {
+        // default action is writing to your feed
+        rotonde.write(message)
+    }
+    util.settings().then(function(settings) {
+        archive.save(settings["rotonde location"])
+        archive.key().then(function(key) { console.log("btw ur key is %s", key) })
+    })
+}
 
 function fetchPortal(portal) {
     if (portal.indexOf("http") < 0) {
