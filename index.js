@@ -39,7 +39,6 @@ function mediaLink(link) {
                     // file exists
                     // add it to the dat archive
                     archive.add(link).then(function() {
-                        console.log("add worked!")
                         return archive.key()
                     })
                     // return path as dat://<archiveKey>/<filename> &&
@@ -119,8 +118,6 @@ function saveArchive() {
     })
 }
 
-
-
 function fetchPortal(portal) {
     if (portal.indexOf("http") < 0) {
         portal = "http://" + portal
@@ -135,30 +132,39 @@ function fetchPortal(portal) {
 }
 
 app.use(function(state, emitter) {
-    process("rotonde.cblgh.org") // set initial portal to mine
+    // create state.list
+    state.list = []
+
+    // read local data first, populating the feed
+    util.data().then(function(data) {
+        var base = data[0]
+        processPortals(base)
+    })
 
     function process(portalUrl) {
         state.list = [] // clear list
-        fetchPortal(portalUrl).then(function(base) {
-            // for each portal i follow
-            base.portal.map(function (portalDomain) {
-                // get its contents
-                console.log("fetching", portalDomain)
-                fetchPortal(portalDomain).then(function(portal) {
-                    // then process its entries
-                    portal.feed.map(function(entry) {
-                        // adding its properties to each entry
-                        entry.avatar = portal.profile.avatar
-                        entry.color = portal.profile.color
-                        entry.portal = portalDomain
-                        entry.name = portal.profile.name
-                        // and pushing it onto our timeline feed
-                        state.list.push(entry)
-                    }) 
-                    // sort entries with newest at the top of the page
-                    state.list.sort(compare)
-                    emitter.emit("render")
-                })
+        fetchPortal(portalUrl).then(function(base) {processPortals(base) })
+    }
+
+    function processPortals(base) {
+        // for each portal i follow
+        base.portal.map(function (portalDomain) {
+            // get its contents
+            console.log("fetching", portalDomain)
+            fetchPortal(portalDomain).then(function(portal) {
+                // then process its entries
+                portal.feed.map(function(entry) {
+                    // adding its properties to each entry
+                    entry.avatar = portal.profile.avatar
+                    entry.color = portal.profile.color
+                    entry.portal = portalDomain
+                    entry.name = portal.profile.name
+                    // and pushing it onto our timeline feed
+                    state.list.push(entry)
+                }) 
+                // sort entries with newest at the top of the page
+                state.list.sort(compare)
+                emitter.emit("render")
             })
         })
     }
