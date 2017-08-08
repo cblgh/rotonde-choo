@@ -1,3 +1,7 @@
+var path = require("path")
+var fs = require("fs")
+var osenv = require("osenv")
+var url = require("url")
 // import choo
 var choo = require("choo")
 // import choo's template helper
@@ -8,17 +12,69 @@ var app = choo()
 var $ = document.getElementById.bind(document)
 //  manage files and URLs using their default applications
 var shell = require("electron").shell
-var path = require("path")
 var util = require("./rotonde-cli/rotonde-utils.js")
 // to handle the rotonde specific stuff
 var rotonde = require("./rotonde-cli/rotonde-lib.js")
 // to connect rotonde with dat
-var hyperotonde = require("./node_modules/hyperotonde/hyperotonde.js")
+var hyperotonde = require("/Users/cblgh/code/hyperotonde/hyperotonde.js")
 archive = hyperotonde(path.resolve(util.dir, "rotonde.archive"))
+// parses messages for --url, --media
+var minimist = require("minimist")
+
+// print archive key
+archive.key().then(function(key) { console.log("btw ur key is %s", key) })
+
+// upload media links on the filesystem to dat
+function mediaLink(link) {
+    return new Promise(function(resolve, reject) {
+        // links to a web resource
+        var protocolIndex = link.indexOf("://") 
+        if (protocolIndex > -1) {
+            return link
+        } else {
+            // assume it is a file on this computer
+            link = link.replace("~", osenv.home())
+            fs.stat(link, function(err, stat) {
+                if (err == null) {
+                    // file exists
+                    // add it to the dat archive
+                    archive.add(link).then(function() {
+                        console.log("add worked!")
+                        return archive.key()
+                    })
+                    // return path as dat://<archiveKey>/<filename> &&
+                    // https://<dat-endpoint>/<filename>
+                    // (e.g. https://rotonde3-cblgh.hashbase.io/<filename>)
+                    .then(function(key) {
+                        var file = path.basename(link)
+                        link = {"dat": "dat://" + key + "/" + file}
+                        // load the dat endpoint from the settings file
+                        util.settings().then(function(settings) {
+                            link["http"] = url.resolve(settings["dat endpoint"], file)
+                            resolve(link)
+                        })
+                    })
+                } else if (err.code == "ENOENT") {
+                    console.error("file %s doesn't exist!", link)
+                    reject()
+                }
+            })
+        }
+    })
+}
+
+function setDatEndpoint(endpoint) {
+    util.settings().then(function(settings) {
+        settings["dat endpoint"] = endpoint
+        util.saveSettings(settings)
+    })
+}
 
 function handleInput(message) {
+    var argv = minimist(message.split(" "))
     var commands = {"save": rotonde.save, "set": rotonde.attribute, 
-        "follow": rotonde.follow, "unfollow": rotonde.unfollow}
+        "follow": rotonde.follow, "unfollow": rotonde.unfollow, "endpoint": setDatEndpoint
+    }
     // we're dealing with a command (or a typo)
     if (message.charAt(0) === "/") {
         var parts = message.substr(1).split(" ")
@@ -40,16 +96,30 @@ function handleInput(message) {
                 commands[cmd](content)
             }
         }
-    // don't write any messages starting with / as 99% time they'll just be typos of commands
+    // we don't allow writing messages starting with / as 99% time they'll just be typos of commands
     } else {
         // default action is writing to your feed
-        rotonde.write(message)
+        if (argv.media) {
+            console.log(argv.media)
+            mediaLink(argv.media).then(function(link) {
+                message = message.replace(argv.media, link["http"])
+                rotonde.write(message).then(saveArchive)
+            }).catch(function() {
+                console.error("noo it didnt exist :<")
+            })
+        } else {
+            rotonde.write(message).then(saveArchive)
+        }
     }
+}
+
+function saveArchive() {
     util.settings().then(function(settings) {
         archive.save(settings["rotonde location"])
-        archive.key().then(function(key) { console.log("btw ur key is %s", key) })
     })
 }
+
+
 
 function fetchPortal(portal) {
     if (portal.indexOf("http") < 0) {
