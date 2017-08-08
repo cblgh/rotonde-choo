@@ -69,48 +69,6 @@ function setDatEndpoint(endpoint) {
     })
 }
 
-function handleInput(message) {
-    var argv = minimist(message.split(" "))
-    var commands = {"save": rotonde.save, "set": rotonde.attribute, 
-        "follow": rotonde.follow, "unfollow": rotonde.unfollow, "endpoint": setDatEndpoint
-    }
-    // we're dealing with a command (or a typo)
-    if (message.charAt(0) === "/") {
-        var parts = message.substr(1).split(" ")
-        var cmd = parts.splice(0, 1)[0]
-        var content = parts
-
-        if (cmd in commands) {
-            // set <color|location|name>=<value> for properties
-            if (cmd === "set" && content.length > 1) {
-                var attribute = content.splice(0, 1)[0]
-                var value = content.join(" ")
-                rotonde.set(attribute, value)
-            } else if (cmd === "save") {
-                var jsonLocation = content.join(" ")
-                // save to file
-                rotonde.save(jsonLocation)
-            }  else {
-                content = content.join(" ")
-                commands[cmd](content)
-            }
-        }
-    // we don't allow writing messages starting with / as 99% time they'll just be typos of commands
-    } else {
-        // default action is writing to your feed
-        if (argv.media) {
-            console.log(argv.media)
-            mediaLink(argv.media).then(function(link) {
-                message = message.replace(argv.media, link["http"])
-                rotonde.write(message).then(saveArchive)
-            }).catch(function() {
-                console.error("noo it didnt exist :<")
-            })
-        } else {
-            rotonde.write(message).then(saveArchive)
-        }
-    }
-}
 
 function saveArchive() {
     util.settings().then(function(settings) {
@@ -134,13 +92,17 @@ function fetchPortal(portal) {
 app.use(function(state, emitter) {
     // create state.list
     state.list = []
+    loadLocal()
 
-    // read local data first, populating the feed
-    util.data().then(function(data) {
-        var base = data[0]
-        processPortals(base)
-    })
+    function loadLocal() {
+        // read local data first, populating the feed
+        util.data().then(function(data) {
+            var base = data[0]
+            processPortals(base)
+        })
+    }
 
+    // called when a link is clicked
     function process(portalUrl) {
         state.list = [] // clear list
         fetchPortal(portalUrl).then(function(base) {processPortals(base) })
@@ -184,6 +146,9 @@ app.use(function(state, emitter) {
         // redraw page
         process(data)
         emitter.emit("render")
+    })
+    emitter.on("home", function() {
+        loadLocal()
     })
 })
 
@@ -239,18 +204,65 @@ app.route("/", function(state, emit) {
             </div>
         </div>
     `
+    function home() {
+        emit("home")
+    }
+
+    function checkInput(evt) {
+        // enter was pressed
+        if (evt.keyCode === 13) {
+            // get the message 
+            var message = $("console").value
+            // clear console
+            $("console").value = "" 
+            handleInput(message)
+        }
+    }
+
+    function handleInput(message) {
+        var argv = minimist(message.split(" "))
+        var commands = {"save": rotonde.save, "set": rotonde.attribute, "follow": rotonde.follow, "unfollow":
+            rotonde.unfollow, "endpoint": setDatEndpoint, "home": home
+        }
+        // we're dealing with a command (or a typo)
+        if (message.charAt(0) === "/") {
+            var parts = message.substr(1).split(" ")
+            var cmd = parts.splice(0, 1)[0]
+            var content = parts
+
+            if (cmd in commands) {
+                // set <color|location|name>=<value> for properties
+                if (cmd === "set" && content.length > 1) {
+                    var attribute = content.splice(0, 1)[0]
+                    var value = content.join(" ")
+                    rotonde.set(attribute, value)
+                } else if (cmd === "save") {
+                    var jsonLocation = content.join(" ")
+                    // save to file
+                    rotonde.save(jsonLocation)
+                }  else {
+                    content = content.join(" ")
+                    commands[cmd](content)
+                }
+            }
+        // we don't allow writing messages starting with / as 99% time they'll just be typos of commands
+        } else {
+            // default action is writing to your feed
+            if (argv.media) {
+                console.log(argv.media)
+                mediaLink(argv.media).then(function(link) {
+                    message = message.replace(argv.media, link["http"])
+                    rotonde.write(message).then(saveArchive)
+                }).catch(function() {
+                    console.error("noo it didnt exist :<")
+                })
+            } else {
+                rotonde.write(message).then(saveArchive)
+            }
+        }
+    }
 })
 
-function checkInput(evt) {
-    // enter was pressed
-    if (evt.keyCode === 13) {
-        // get the message 
-        var message = $("console").value
-        // clear console
-        $("console").value = "" 
-        handleInput(message)
-    }
-}
 
 // start app
 app.mount("div")
