@@ -20,6 +20,7 @@ var hyperotonde = require("/Users/cblgh/code/hyperotonde/hyperotonde.js")
 archive = hyperotonde(path.resolve(util.dir, "rotonde.archive"))
 // parses messages for --url, --media
 var minimist = require("minimist")
+var dedent = require("dedent")
 
 // print archive key
 archive.key().then(function(key) { console.log("btw ur key is %s", key) })
@@ -90,6 +91,8 @@ function fetchPortal(portal) {
 }
 
 app.use(function(state, emitter) {
+    // set an empty placeholder for the console's placeholder
+    state.placeholder = ""
     // create state.list
     state.list = []
     loadLocal()
@@ -107,9 +110,15 @@ app.use(function(state, emitter) {
         state.list = [] // clear list
         fetchPortal(portalUrl).then(function(base) {processPortals(base) })
     }
+    function formatPortalInfo(portal) {
+        return dedent`
+            ${portal.profile.name} in ${portal.profile.location} ${portal.profile.color} 
+            ${portal.feed.length} entries following ${portal.portal.length}`
+    }
 
     function processPortals(base) {
         // for each portal i follow
+        state.placeholder = formatPortalInfo(base)
         base.portal.map(function (portalDomain) {
             // get its contents
             console.log("fetching", portalDomain)
@@ -199,7 +208,7 @@ app.route("/", function(state, emit) {
             <div class="bar-container">
                 <div class="input-bar">
                     <div class="console-cursor">${">"}</div>
-                    <input autofocus placeholder="~/rotonde/rotonde.json  following 5  23 days ago  2 hours" onkeypress=${checkInput} id="console">
+                    <input placeholder=${state.placeholder} autofocus onkeypress=${checkInput} id="console">
                 </div>
             </div>
         </div>
@@ -249,7 +258,6 @@ app.route("/", function(state, emit) {
         } else {
             // default action is writing to your feed
             if (argv.media) {
-                console.log(argv.media)
                 mediaLink(argv.media).then(function(link) {
                     message = message.replace(argv.media, link["http"])
                     rotonde.write(message).then(saveArchive)
