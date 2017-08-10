@@ -1,3 +1,4 @@
+// various node libs used to handle file i/o
 var path = require("path")
 var fs = require("fs")
 var osenv = require("osenv")
@@ -12,20 +13,22 @@ var app = choo()
 var $ = document.getElementById.bind(document)
 //  manage files and URLs using their default applications
 var shell = require("electron").shell
-var util = require("./rotonde-cli/rotonde-utils.js")
 // to handle the rotonde specific stuff
+var util = require("./rotonde-cli/rotonde-utils.js")
 var rotonde = require("./rotonde-cli/rotonde-lib.js")
 // to connect rotonde with dat
 var hyperotonde = require("/Users/cblgh/code/hyperotonde/hyperotonde.js")
 archive = hyperotonde(path.resolve(util.dir, "rotonde.archive"))
 // parses messages for --url, --media
 var minimist = require("minimist")
+// lets you write nicer `template strings` across line breaks
 var dedent = require("dedent")
 
 // print archive key
 archive.key().then(function(key) { console.log("btw ur key is %s", key) })
 
 // upload media links on the filesystem to dat
+// returns {dat: "dat://<archive-key>/<filename>", http: "https://<dat-endpoint>/<filename>"}
 function mediaLink(link) {
     return new Promise(function(resolve, reject) {
         // links to a web resource
@@ -258,7 +261,14 @@ app.route("/", function(state, emit) {
                 if (cmd === "set" && content.length > 1) {
                     var attribute = content.splice(0, 1)[0]
                     var value = content.join(" ")
-                    rotonde.set(attribute, value)
+                    if (attribute === "avatar") {
+                        mediaLink(value).then(function(value) {
+                            var httpLink = value["http"]
+                            rotonde.attribute(attribute, httpLink)
+                        })
+                    } else {
+                        rotonde.attribute(attribute, value)
+                    }
                 } else if (cmd === "save") {
                     var jsonLocation = content.join(" ")
                     // save to file
