@@ -96,9 +96,21 @@ function fetchPortal(portal) {
 app.use(function(state, emitter) {
     // set an empty placeholder for the console's placeholder
     state.placeholder = ""
+    state.archiveKey = ""
+    state.datEndpoit = "dat endpoint not configured"
     // create state.list
     state.list = []
     loadLocal()
+
+    function populateDatHeader() {
+        archive.key().then(function(key) {
+            state.archiveKey = key
+            return util.settings()
+        })
+        .then(function(settings) {
+            state.datEndpoint = settings["dat endpoint"] || "dat endpoint not configured"
+        })
+    }
 
     function loadLocal() {
         // read local data first, populating the feed
@@ -119,6 +131,7 @@ app.use(function(state, emitter) {
     }
 
     function processPortals(base) {
+        populateDatHeader()
         // reset state
         state.list = []
         // for each portal i follow
@@ -202,9 +215,8 @@ app.route("/", function(state, emit) {
         emit("newPortal", e.target.innerHTML.substr(1))
     }
 
-    return html`
-        <div>
-        <div class="header" onclick=${home}>
+    function logo() {
+        return html`
             <svg width="10%" height="10%" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  version="1.1" style="fill:none;stroke:white;stroke-width:28px;stroke-linecap:square;">
               <g transform="translate(150,150),rotate(120,0,0)">
                 <path d="M-15,-100 a90,90 0 0,1 90,90 l0,60"/>   
@@ -216,6 +228,15 @@ app.route("/", function(state, emit) {
                 <path d="M-15,-100 a90,90 0 0,1 90,90 l0,60"/>   
               </g>
             </svg>
+            `
+    }
+
+    return html`
+        <div>
+        <div id="dat-key">${state.archiveKey}</div>
+        <div id="dat-endpoint">${state.datEndpoint}</div>
+        <div class="header" onclick=${home}>
+            ${logo()}
         </div>
             <div class="container">
                 <div>
