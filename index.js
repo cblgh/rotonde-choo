@@ -97,7 +97,7 @@ app.use(function(state, emitter) {
     // set an empty placeholder for the console's placeholder
     state.placeholder = ""
     state.archiveKey = ""
-    state.datEndpoit = "dat endpoint not configured"
+    state.datEndpoint = "dat endpoint not configured"
     // create state.list
     state.list = []
     loadLocal()
