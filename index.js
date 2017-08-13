@@ -93,6 +93,12 @@ function fetchPortal(portal) {
     })
 }
 
+function formatPortalInfo(portal) {
+    return dedent`
+        ${portal.profile.name} in ${portal.profile.location} ${portal.profile.color} 
+        ${portal.feed.length} entries following ${portal.portal.length}`
+}
+
 app.use(function(state, emitter) {
     // set an empty placeholder for the console's placeholder
     state.placeholder = ""
@@ -123,11 +129,6 @@ app.use(function(state, emitter) {
     // called when a link is clicked
     function process(portalUrl) {
         fetchPortal(portalUrl).then(function(base) {processPortals(base) })
-    }
-    function formatPortalInfo(portal) {
-        return dedent`
-            ${portal.profile.name} in ${portal.profile.location} ${portal.profile.color} 
-            ${portal.feed.length} entries following ${portal.portal.length}`
     }
 
     function processPortals(base) {
@@ -271,48 +272,59 @@ app.route("/", function(state, emit) {
         var commands = {"save": rotonde.save, "set": rotonde.attribute, "follow": rotonde.follow, "unfollow":
             rotonde.unfollow, "endpoint": setDatEndpoint, "home": home
         }
-        // we're dealing with a command (or a typo)
-        if (message.charAt(0) === "/") {
-            var parts = message.substr(1).split(" ")
-            var cmd = parts.splice(0, 1)[0]
-            var content = parts
 
-            if (cmd in commands) {
-                // set <color|location|name>=<value> for properties
-                if (cmd === "set" && content.length > 1) {
-                    var attribute = content.splice(0, 1)[0]
-                    var value = content.join(" ")
-                    if (attribute === "avatar") {
-                        mediaLink(value).then(function(value) {
-                            var httpLink = value["http"]
-                            rotonde.attribute(attribute, httpLink)
-                        })
-                    } else {
-                        rotonde.attribute(attribute, value)
+        return new Promise(function(resolve, reject) {
+            // we're dealing with a command (or a typo)
+            if (message.charAt(0) === "/") {
+                var parts = message.substr(1).split(" ")
+                var cmd = parts.splice(0, 1)[0]
+                var content = parts
+
+                if (cmd in commands) {
+                    // set <color|location|name>=<value> for properties
+                    if (cmd === "set" && content.length > 1) {
+                        var attribute = content.splice(0, 1)[0]
+                        var value = content.join(" ")
+                        if (attribute === "avatar") {
+                            mediaLink(value).then(function(value) {
+                                var httpLink = value["http"]
+                                rotonde.attribute(attribute, httpLink).then(function() { resolve() })
+                            })
+                        } else {
+                            rotonde.attribute(attribute, value).then(function() { resolve() })
+                        }
+                    } else if (cmd === "save") {
+                        var jsonLocation = content.join(" ")
+                        // save to file
+                        rotonde.save(jsonLocation).then(function() { resolve() })
+                    }  else {
+                        content = content.join(" ")
+                        commands[cmd](content).then(function() { resolve() })
                     }
-                } else if (cmd === "save") {
-                    var jsonLocation = content.join(" ")
-                    // save to file
-                    rotonde.save(jsonLocation)
-                }  else {
-                    content = content.join(" ")
-                    commands[cmd](content)
+                }
+            // we don't allow writing messages starting with / as 99% time they'll just be typos of commands
+            } else {
+                // default action is writing to your feed
+                if (argv.media) {
+                    mediaLink(argv.media).then(function(link) {
+                        message = message.replace(argv.media, link["http"])
+                        rotonde.write(message).then(saveArchive).then(function() { resolve() })
+                    }).catch(function() {
+                        console.error("noo it didnt exist :<")
+                    })
+                } else {
+                    rotonde.write(message).then(saveArchive).then(function() { resolve() })
                 }
             }
-        // we don't allow writing messages starting with / as 99% time they'll just be typos of commands
-        } else {
-            // default action is writing to your feed
-            if (argv.media) {
-                mediaLink(argv.media).then(function(link) {
-                    message = message.replace(argv.media, link["http"])
-                    rotonde.write(message).then(saveArchive)
-                }).catch(function() {
-                    console.error("noo it didnt exist :<")
-                })
-            } else {
-                rotonde.write(message).then(saveArchive)
-            }
-        }
+        })
+        .then(function() {
+            util.data().then(function(data) {
+                var portal = data[0]
+                state.placeholder = formatPortalInfo(portal)
+                // redraw page
+                emit("render")
+            })
+        })
     }
 })
 
