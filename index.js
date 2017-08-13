@@ -72,7 +72,7 @@ function saveArchive() {
 }
 
 function fetchPortal(portal) {
-    if (portal.indexOf("http") < 0) {
+    if (portal && portal.indexOf("http") < 0) {
         portal = "http://" + portal
     }
     return fetch(portal)
@@ -146,10 +146,14 @@ app.use(function(state, emitter) {
                     entry.name = portal.profile.name
                     // and pushing it onto our timeline feed
                     state.list.push(entry)
-                }) 
+                })
                 // sort entries with newest at the top of the page
                 state.list.sort(compare)
                 emitter.emit("render")
+            })
+            .catch(function(err) {
+                console.log("err fetching %s", portalDomain)
+                console.log(err)
             })
         })
     }
@@ -217,13 +221,13 @@ app.route("/", function(state, emit) {
         return html`
             <svg width="10%" height="10%" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  version="1.1" style="fill:none;stroke:white;stroke-width:28px;stroke-linecap:square;">
             <g id="rotonde" transform="rotate(0,150,150)">
-            <animateTransform attribute="xml"
-                attributeName="transform" 
-                type="rotate"
-                from="0 150 150"
-                to="360 150 150"
-                dur="12s"
-                repeatCount="indefinite"/>
+            // <animateTransform attribute="xml"
+            //     attributeName="transform" 
+            //     type="rotate"
+            //     from="0 150 150"
+            //     to="360 150 150"
+            //     dur="12s"
+            //     repeatCount="indefinite"/>
                   <g transform="translate(150,150),rotate(120,0,0)">
                     <path d="M-15,-100 a90,90 0 0,1 90,90 l0,60"/>   
                   </g>
@@ -359,7 +363,7 @@ app.route("/", function(state, emit) {
                 state.fadeInOut = ""
                 state.message = "" 
                 emit("render")
-            }, 4000)
+            }, 1200)
             util.data().then(function(data) {
                 var portal = data[0]
                 // console shows portal we're at currently,
