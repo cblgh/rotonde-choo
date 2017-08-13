@@ -295,34 +295,34 @@ app.route("/", function(state, emit) {
                         var value = content.join(" ")
                         if (attribute === "avatar") {
                             mediaLink(value).then(function(value) {
-                                console.log(value)
                                 var httpLink = value["http"]
-                                rotonde.attribute(attribute, httpLink).then(function() { resolve() })
+                                rotonde.attribute(attribute, httpLink).then(resolve)
                             })
                         } else {
-                            rotonde.attribute(attribute, value).then(function() { resolve() })
+                            rotonde.attribute(attribute, value).then(resolve)
                         }
                     } else if (cmd === "save") {
                         var jsonLocation = content.join(" ")
                         // save to file
-                        rotonde.save(jsonLocation).then(function() { resolve() })
+                        rotonde.save(jsonLocation).then(resolve)
                     }  else {
                         content = content.join(" ")
-                        commands[cmd](content).then(function() { resolve() })
+                        commands[cmd](content).then(resolve)
                     }
                 }
-            // we don't allow writing messages starting with / as 99% time they'll just be typos of commands
+            // the default action is to write to your feed
             } else {
-                // default action is writing to your feed
+                // if the message had --media <media-path>
                 if (argv.media) {
+                    // check to see if it was a http link or a path on this computer
                     mediaLink(argv.media).then(function(link) {
                         message = message.replace(argv.media, link["http"])
-                        rotonde.write(message).then(function() { resolve() })
+                        rotonde.write(message).then(resolve)
                     }).catch(function() {
                         console.error("noo it didnt exist :<")
                     })
                 } else {
-                    rotonde.write(message).then(function() { resolve() })
+                    rotonde.write(message).then(resolve)
                 }
             }
         })
