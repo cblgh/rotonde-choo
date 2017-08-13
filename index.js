@@ -334,6 +334,10 @@ app.route("/", function(state, emit) {
             }
         })
         .then(saveArchive)
+        .catch(function(err) {
+            state.message = "error: " + err.code
+            console.log(err)
+        })
         .then(function() {
             state.fadeInOut = "fader"
             setTimeout(function() {
