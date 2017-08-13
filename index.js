@@ -23,7 +23,6 @@ archive = hyperotonde(path.resolve(util.dir, "rotonde.archive"))
 var minimist = require("minimist")
 // lets you write nicer `template strings` across line breaks
 var dedent = require("dedent")
-
 // print archive key
 archive.key().then(function(key) { console.log("btw ur key is %s", key) })
 
@@ -63,13 +62,6 @@ function mediaLink(link) {
                 }
             })
         }
-    })
-}
-
-function setDatEndpoint(endpoint) {
-    util.settings().then(function(settings) {
-        settings["dat endpoint"] = endpoint
-        util.saveSettings(settings)
     })
 }
 
@@ -265,6 +257,14 @@ app.route("/", function(state, emit) {
             $("console").value = "" 
             handleInput(message)
         }
+    }
+
+    function setDatEndpoint(endpoint) {
+        return util.settings().then(function(settings) {
+            settings["dat endpoint"] = endpoint
+            state.datEndpoint = endpoint
+            util.saveSettings(settings)
+        })
     }
 
     function handleInput(message) {
