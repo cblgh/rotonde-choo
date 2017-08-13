@@ -174,21 +174,6 @@ app.use(function(state, emitter) {
     emitter.on("home", function() {
         loadLocal()
     })
-
-    // var frameRate = 20
-    // var rotationPerFrame = 0.03
-    // var rotation = 0
-    // var lastFrame = +new Date
-    // function rotateLogo() {
-    //     var now = +new Date
-    //     var delta = (now - lastFrame) / frameRate
-    //     lastFrame = now
-    //     rotation = (rotation + rotationPerFrame * delta) % 360
-    //     console.log(rotation)
-    //     $("rotonde").setAttribute("transform", `rotate(${rotation}, 150, 150)`)
-    // }
-    //
-    // setInterval(rotateLogo, frameRate)
 })
 
 function link(entry, prop, text) {
