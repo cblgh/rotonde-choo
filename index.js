@@ -78,6 +78,7 @@ function fetchPortal(portal) {
     }
     return fetch(portal)
         .catch(function(err) {
+            console.log("wtffff-----------------")
             return err
         })
         .then(function(response) { 
@@ -261,6 +262,13 @@ app.route("/", function(state, emit) {
 
     function setDatEndpoint(endpoint) {
         return util.settings().then(function(settings) {
+            // if endpoint is missing a protocol, assume http
+            // (if it's actually https then most webservers will automatically redirect to https)
+            if (endpoint.indexOf("://") < 0) {
+                console.log(endpoint)
+                endpoint = "http://" + endpoint
+            }
+            console.log(endpoint)
             settings["dat endpoint"] = endpoint
             state.datEndpoint = endpoint
             util.saveSettings(settings)
@@ -287,6 +295,7 @@ app.route("/", function(state, emit) {
                         var value = content.join(" ")
                         if (attribute === "avatar") {
                             mediaLink(value).then(function(value) {
+                                console.log(value)
                                 var httpLink = value["http"]
                                 rotonde.attribute(attribute, httpLink).then(function() { resolve() })
                             })
@@ -308,15 +317,16 @@ app.route("/", function(state, emit) {
                 if (argv.media) {
                     mediaLink(argv.media).then(function(link) {
                         message = message.replace(argv.media, link["http"])
-                        rotonde.write(message).then(saveArchive).then(function() { resolve() })
+                        rotonde.write(message).then(function() { resolve() })
                     }).catch(function() {
                         console.error("noo it didnt exist :<")
                     })
                 } else {
-                    rotonde.write(message).then(saveArchive).then(function() { resolve() })
+                    rotonde.write(message).then(function() { resolve() })
                 }
             }
         })
+        .then(saveArchive)
         .then(function() {
             util.data().then(function(data) {
                 var portal = data[0]
