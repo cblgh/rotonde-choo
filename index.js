@@ -253,7 +253,10 @@ app.route("/", function(state, emit) {
         </div>
     `
     function home() {
-        emit("home")
+        return new Promise(function(resolve, reject) {
+            emit("home")
+            resolve()
+        })
     }
 
     function checkInput(evt) {
@@ -310,10 +313,12 @@ app.route("/", function(state, emit) {
                         }
                     } else if (cmd === "save") {
                         var jsonLocation = content.join(" ")
+                        state.message = "now using " + jsonLocation
                         // save to file
                         rotonde.save(jsonLocation).then(resolve)
                     }  else {
                         content = content.join(" ")
+                        state.message = cmd + " " + content
                         commands[cmd](content).then(resolve)
                     }
                 }
