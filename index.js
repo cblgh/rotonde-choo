@@ -182,7 +182,8 @@ app.use(function(state, emitter) {
     var lastFrame = +new Date
     function rotateLogo() {
         var now = +new Date
-        var delta = now - lastFrame
+        var delta = (now - lastFrame) / frameRate
+        lastFrame = now
         rotation = (rotation + rotationPerFrame * delta) % 360
         console.log(rotation)
         $("rotonde").setAttribute("transform", `rotate(${rotation}, 150, 150)`)
