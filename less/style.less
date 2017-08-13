@@ -36,11 +36,23 @@ body {
 #dat-key {
     margin-top: 5px;
 }
+.info-container {
+    height: 10px;
+}
 #dat-key, #dat-endpoint, #feedback {
     color: #776d6d;
     text-align: right;
     font-size: 9pt;
     margin-right: 5px;
+}
+
+.fader {
+    animation: fadeinout 1s linear forwards;
+}
+
+@keyframes fadeinout {
+    0%,50%,100% { opacity: 0; }
+    25%,75% { opacity: 1; }
 }
 
 a {

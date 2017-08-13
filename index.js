@@ -97,6 +97,7 @@ app.use(function(state, emitter) {
     state.archiveKey = ""
     state.datEndpoint = "dat endpoint not configured"
     state.message = ""
+    state.fadeInOut = ""
     // create state.list
     state.list = []
     loadLocal()
@@ -230,9 +231,11 @@ app.route("/", function(state, emit) {
 
     return html`
         <div>
-        <div id="dat-key">${state.archiveKey}</div>
-        <div id="dat-endpoint">${state.datEndpoint}</div>
-        <div id="feedback">${state.message}</div>
+        <div class="info-container">
+            <div id="dat-key">${state.archiveKey}</div>
+            <div id="dat-endpoint">${state.datEndpoint}</div>
+            <div class=${state.fadeInOut} id="feedback">${state.message}</div>
+        </div>
         <div class="header" onclick=${home}>
             ${logo()}
         </div>
@@ -332,6 +335,12 @@ app.route("/", function(state, emit) {
         })
         .then(saveArchive)
         .then(function() {
+            state.fadeInOut = "fader"
+            setTimeout(function() {
+                state.fadeInOut = ""
+                state.message = "" 
+                emit("render")
+            }, 4000)
             util.data().then(function(data) {
                 var portal = data[0]
                 // console shows portal we're at currently,
