@@ -108,7 +108,6 @@ app.use(function(state, emitter) {
             return util.settings()
         })
         .then(function(settings) {
-            console.log(settings)
             state.datEndpoint = settings["dat endpoint"] || "dat endpoint not configured"
         })
     }
@@ -176,21 +175,20 @@ app.use(function(state, emitter) {
         loadLocal()
     })
 
-    var frameRate = 20
-    var rotationPerFrame = 0.03
-    var rotation = 0
-    var lastFrame = +new Date
-    function rotateLogo() {
-        var now = +new Date
-        var delta = (now - lastFrame) / frameRate
-        lastFrame = now
-        rotation = (rotation + rotationPerFrame * delta) % 360
-        console.log(rotation)
-        $("rotonde").setAttribute("transform", `rotate(${rotation}, 150, 150)`)
-        emitter.emit("redraw")
-    }
-
-    setInterval(rotateLogo, frameRate)
+    // var frameRate = 20
+    // var rotationPerFrame = 0.03
+    // var rotation = 0
+    // var lastFrame = +new Date
+    // function rotateLogo() {
+    //     var now = +new Date
+    //     var delta = (now - lastFrame) / frameRate
+    //     lastFrame = now
+    //     rotation = (rotation + rotationPerFrame * delta) % 360
+    //     console.log(rotation)
+    //     $("rotonde").setAttribute("transform", `rotate(${rotation}, 150, 150)`)
+    // }
+    //
+    // setInterval(rotateLogo, frameRate)
 })
 
 function link(entry, prop, text) {
@@ -233,7 +231,14 @@ app.route("/", function(state, emit) {
     function logo() {
         return html`
             <svg width="10%" height="10%" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  version="1.1" style="fill:none;stroke:white;stroke-width:28px;stroke-linecap:square;">
-            <g id="rotonde" transform="rotate(${72},150,150)">
+            <g id="rotonde" transform="rotate(0,150,150)">
+            <animateTransform attribute="xml"
+                attributeName="transform" 
+                type="rotate"
+                from="0 150 150"
+                to="360 150 150"
+                dur="12s"
+                repeatCount="indefinite"/>
                   <g transform="translate(150,150),rotate(120,0,0)">
                     <path d="M-15,-100 a90,90 0 0,1 90,90 l0,60"/>   
                   </g>
