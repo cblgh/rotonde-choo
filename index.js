@@ -33,7 +33,7 @@ function mediaLink(link) {
         // links to a web resource
         var protocolIndex = link.indexOf("://") 
         if (protocolIndex > -1) {
-            return link
+            resolve({"http": link, "dat": ""})
         } else {
             // assume it is a file on this computer
             link = link.replace("~", osenv.home())
@@ -91,11 +91,12 @@ function formatPortalInfo(portal) {
 }
 
 app.use(function(state, emitter) {
+    state.isHome = true
     // set an empty placeholder for the console's placeholder
     state.placeholder = ""
     state.archiveKey = ""
     state.datEndpoint = "dat endpoint not configured"
-    state.isHome = true
+    state.message = ""
     // create state.list
     state.list = []
     loadLocal()
@@ -231,6 +232,7 @@ app.route("/", function(state, emit) {
         <div>
         <div id="dat-key">${state.archiveKey}</div>
         <div id="dat-endpoint">${state.datEndpoint}</div>
+        <div id="feedback">${state.message}</div>
         <div class="header" onclick=${home}>
             ${logo()}
         </div>
@@ -294,6 +296,7 @@ app.route("/", function(state, emit) {
                     if (cmd === "set" && content.length > 1) {
                         var attribute = content.splice(0, 1)[0]
                         var value = content.join(" ")
+                        state.message = attribute + " updated"
                         if (attribute === "avatar") {
                             mediaLink(value).then(function(value) {
                                 var httpLink = value["http"]
