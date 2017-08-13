@@ -98,7 +98,6 @@ app.use(function(state, emitter) {
     state.datEndpoint = "dat endpoint not configured"
     state.message = ""
     state.fadeInOut = ""
-    state.rotation = 0
     // create state.list
     state.list = []
     loadLocal()
@@ -179,10 +178,14 @@ app.use(function(state, emitter) {
 
     var frameRate = 20
     var rotationPerFrame = 0.03
+    var rotation = 0
+    var lastFrame = +new Date
     function rotateLogo() {
-        state.rotation = (state.rotation + rotationPerFrame) % 360
-        console.log(state.rotation)
-        $("rotonde").setAttribute("transform", `rotate(${state.rotation}, 150, 150)`)
+        var now = +new Date
+        var delta = now - lastFrame
+        rotation = (rotation + rotationPerFrame * delta) % 360
+        console.log(rotation)
+        $("rotonde").setAttribute("transform", `rotate(${rotation}, 150, 150)`)
         emitter.emit("redraw")
     }
 
