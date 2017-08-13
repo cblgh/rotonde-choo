@@ -27,7 +27,7 @@ var dedent = require("dedent")
 archive.key().then(function(key) { console.log("btw ur key is %s", key) })
 
 // upload media links on the filesystem to dat
-// returns {dat: "dat://<archive-key>/<filename>", http: "https://<dat-endpoint>/<filename>"}
+// returns {dat: "dat://<archive-key>/<filename>", http: "http://<dat endpoint>/<filename>"}
 function mediaLink(link) {
     return new Promise(function(resolve, reject) {
         // links to a web resource
@@ -65,7 +65,6 @@ function mediaLink(link) {
     })
 }
 
-
 function saveArchive() {
     util.settings().then(function(settings) {
         archive.save(settings["rotonde location"])
@@ -78,7 +77,6 @@ function fetchPortal(portal) {
     }
     return fetch(portal)
         .catch(function(err) {
-            console.log("wtffff-----------------")
             return err
         })
         .then(function(response) { 
@@ -97,6 +95,7 @@ app.use(function(state, emitter) {
     state.placeholder = ""
     state.archiveKey = ""
     state.datEndpoint = "dat endpoint not configured"
+    state.isHome = true
     // create state.list
     state.list = []
     loadLocal()
@@ -112,6 +111,7 @@ app.use(function(state, emitter) {
     }
 
     function loadLocal() {
+        state.isHome = true
         // read local data first, populating the feed
         util.data().then(function(data) {
             var base = data[0]
@@ -121,6 +121,7 @@ app.use(function(state, emitter) {
 
     // called when a link is clicked
     function process(portalUrl) {
+        state.isHome = false
         fetchPortal(portalUrl).then(function(base) {processPortals(base) })
     }
 
@@ -167,6 +168,7 @@ app.use(function(state, emitter) {
         process(data)
         emitter.emit("render")
     })
+
     emitter.on("home", function() {
         loadLocal()
     })
@@ -262,13 +264,11 @@ app.route("/", function(state, emit) {
 
     function setDatEndpoint(endpoint) {
         return util.settings().then(function(settings) {
-            // if endpoint is missing a protocol, assume http
-            // (if it's actually https then most webservers will automatically redirect to https)
+            // if endpoint is missing protocol assume http
+            // (if it's actually https then most webservers will automatically redirect)
             if (endpoint.indexOf("://") < 0) {
-                console.log(endpoint)
                 endpoint = "http://" + endpoint
             }
-            console.log(endpoint)
             settings["dat endpoint"] = endpoint
             state.datEndpoint = endpoint
             util.saveSettings(settings)
@@ -277,8 +277,9 @@ app.route("/", function(state, emit) {
 
     function handleInput(message) {
         var argv = minimist(message.split(" "))
-        var commands = {"save": rotonde.save, "set": rotonde.attribute, "follow": rotonde.follow, "unfollow":
-            rotonde.unfollow, "endpoint": setDatEndpoint, "home": home
+        var commands = {
+            "save": rotonde.save, "set": rotonde.attribute, "follow": rotonde.follow, 
+            "unfollow": rotonde.unfollow, "endpoint": setDatEndpoint, "home": home
         }
 
         return new Promise(function(resolve, reject) {
@@ -330,7 +331,11 @@ app.route("/", function(state, emit) {
         .then(function() {
             util.data().then(function(data) {
                 var portal = data[0]
-                state.placeholder = formatPortalInfo(portal)
+                // console shows portal we're at currently,
+                // if that portal is our portal, the update the console information
+                if (state.isHome) {
+                    state.placeholder = formatPortalInfo(portal)
+                }
                 // redraw page
                 emit("render")
             })
