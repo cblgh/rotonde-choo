@@ -176,6 +176,17 @@ app.use(function(state, emitter) {
     emitter.on("home", function() {
         loadLocal()
     })
+
+    var frameRate = 20
+    var rotationPerFrame = 0.03
+    function rotateLogo() {
+        state.rotation = (state.rotation + rotationPerFrame) % 360
+        console.log(state.rotation)
+        $("rotonde").setAttribute("transform", `rotate(${state.rotation}, 150, 150)`)
+        emitter.emit("redraw")
+    }
+
+    setInterval(rotateLogo, frameRate)
 })
 
 function link(entry, prop, text) {
@@ -232,17 +243,6 @@ app.route("/", function(state, emit) {
             </svg>
             `
     }
-
-    var frameRate = 20
-    var rotationPerFrame = 0.03
-    function rotateLogo() {
-        state.rotation = (state.rotation + rotationPerFrame) % 360
-        console.log(state.rotation)
-        $("rotonde").setAttribute("transform", `rotate(${state.rotation}, 150, 150)`)
-        emit("redraw")
-    }
-
-    setInterval(rotateLogo, frameRate)
 
 
     return html`
