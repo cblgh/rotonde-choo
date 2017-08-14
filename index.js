@@ -234,7 +234,12 @@ app.route("/", function(state, emit) {
     }
 
     function domainClick(e) {
-        emit("newPortal", e.target.innerHTML.substr(1))
+        var portal = e.target.innerHTML.substr(1)
+        if (portal === "localhost") {
+            emit("home")
+        } else {
+            emit("newPortal", portal)
+        }
     }
 
 
@@ -374,7 +379,6 @@ app.route("/", function(state, emit) {
                 }
             // the default action is to write to your feed
             } else {
-
                 message = argv._.join(" ")
                 // resolve messages that contain --media 
                 if (argv.media) {
