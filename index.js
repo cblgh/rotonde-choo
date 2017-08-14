@@ -109,13 +109,14 @@ function compare(a, b) {
     }
     return 0
 }
+
 app.use(function(state, emitter) {
     state.isHome = true
     // set he console's placeholder to be empty initially
     state.placeholder = ""
     state.archiveKey = ""
     // holds the local portal's info for displaying posts in the feed after writing
-    state.portal = {}
+    state.homePortal = {}
     state.datEndpoint = "dat endpoint not configured"
     state.feedbackMsg = ""
     state.fadeInOut = ""
@@ -141,7 +142,7 @@ app.use(function(state, emitter) {
             localPortal.feed.map(function(entry) {
                 addFromFeed(entry, localPortal, "localhost")
             })
-            state.portal = localPortal
+            state.homePortal = localPortal
             processPortals(localPortal)
         })
     }
@@ -337,7 +338,7 @@ app.route("/", function(state, emit) {
             if (argv.media) post.media = argv.media
             if (argv.url) post.url = argv.url
             if (argv.focus) post.focus = argv.focus
-            post = formatPost(post, state.portal, "localhost")
+            post = formatPost(post, state.homePortal, "localhost")
             // update state
             state.posts.push(post)
             emit("addPost")
@@ -345,6 +346,8 @@ app.route("/", function(state, emit) {
             rotonde.write(message, argv.url, argv.media, argv.focus).then(resolve)
         }
 
+        // hax to update immediately if colour is changed, for a better exp
+        var colorChanged = false
         return new Promise(function(resolve, reject) {
             // we're dealing with a command (or a typo)
             if (message.charAt(0) === "/") {
@@ -357,6 +360,9 @@ app.route("/", function(state, emit) {
                     if (cmd === "set" && content.length > 1) {
                         var attribute = content.splice(0, 1)[0]
                         var value = content.join(" ")
+                        if (attribute === "color") {
+                            colorChanged = true
+                        }
                         state.feedbackMsg = attribute + " updated"
                         if (attribute === "avatar") {
                             mediaLink(value).then(function(value) {
@@ -413,6 +419,9 @@ app.route("/", function(state, emit) {
                 // if that portal is our portal, then update the console's information
                 if (state.isHome) {
                     state.placeholder = formatPortalInfo(portal)
+                    if (colorChanged) {
+                        emit("home") // hax to update colour of all our entries immediately
+                    }
                 }
                 // redraw page
                 emit("render")
