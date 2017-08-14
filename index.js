@@ -272,15 +272,15 @@ app.route("/", function(state, emit) {
     }
 
     return html`
-        <div>
-        <div class="info-container">
-            <div id="dat-key">${state.archiveKey}</div>
-            <div id="dat-endpoint">${state.datEndpoint}</div>
-            <div class=${state.fadeInOut} id="feedback">${state.feedbackMsg}</div>
-        </div>
-        <div class="header" onclick=${home}>
-            ${logo()}
-        </div>
+        <div class="top-level">
+            <div class="info-container">
+                <div id="dat-key">${state.archiveKey}</div>
+                <div id="dat-endpoint">${state.datEndpoint}</div>
+                <div class=${state.fadeInOut} id="feedback">${state.feedbackMsg}</div>
+            </div>
+            <div class="header" onclick=${home}>
+                ${logo()}
+            </div>
             <div class="container">
                 <div>
                     ${state.posts.map(messageBox)}
@@ -294,6 +294,7 @@ app.route("/", function(state, emit) {
             </div>
         </div>
     `
+
     function home() {
         return new Promise(function(resolve, reject) {
             emit("home")
