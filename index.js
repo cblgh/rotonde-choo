@@ -99,16 +99,28 @@ function formatPost(post, portal, domain) {
     return post
 }
 
+function compare(a, b) {
+    var first = parseInt(a.time)
+    var second = parseInt(b.time)
+    if (first < second) {
+        return 1
+    } else if (first > second) {
+        return -1
+    }
+    return 0
+}
 app.use(function(state, emitter) {
     state.isHome = true
-    // set an empty placeholder for the console's placeholder
+    // set he console's placeholder to be empty initially
     state.placeholder = ""
     state.archiveKey = ""
+    // holds the local portal's info for displaying posts in the feed after writing
+    state.portal = {}
     state.datEndpoint = "dat endpoint not configured"
-    state.message = ""
+    state.feedbackMsg = ""
     state.fadeInOut = ""
-    // create state.posts
     state.posts = []
+
     loadLocal()
 
     function populateDatHeader() {
@@ -125,9 +137,13 @@ app.use(function(state, emitter) {
         state.isHome = true
         // read local data first, populating the feed
         util.data().then(function(data) {
-            var base = data[0]
-            state.portal = base
-            processPortals(base)
+            var localPortal = data[0]
+            localPortal.feed.map(function(entry) {
+                console.log(entry)
+                addFromFeed(entry, localPortal, "localhost")
+            })
+            state.portal = localPortal
+            processPortals(localPortal)
         })
     }
 
@@ -137,10 +153,14 @@ app.use(function(state, emitter) {
         fetchPortal(portalUrl).then(function(base) {processPortals(base) })
     }
 
+    function addFromFeed(entry, portal, domain) {
+        entry = formatPost(entry, portal, domain)
+        // and pushing it onto our timeline feed
+        state.posts.push(entry)
+    }
+
     function processPortals(base) {
         populateDatHeader()
-        // reset state
-        state.posts = []
         // for each portal i follow
         state.placeholder = formatPortalInfo(base)
         base.portal.map(function (portalDomain) {
@@ -149,9 +169,7 @@ app.use(function(state, emitter) {
             fetchPortal(portalDomain).then(function(portal) {
                 // then process its entries
                 portal.feed.map(function(entry) {
-                    entry = formatPost(entry, portal, portalDomain)
-                    // and pushing it onto our timeline feed
-                    state.posts.push(entry)
+                    addFromFeed(entry, portal, portalDomain)
                 })
                 // sort entries with newest at the top of the page
                 emitter.emit("addPost")
@@ -163,24 +181,17 @@ app.use(function(state, emitter) {
         })
     }
 
-    function compare(a, b) {
-        var first = parseInt(a.time)
-        var second = parseInt(b.time)
-        if (first < second) {
-            return 1
-        } else if (first > second) {
-            return -1
-        }
-        return 0
-    }
-
     emitter.on("newPortal", function(data) {
+        // reset state
+        state.posts = []
         // redraw page
         process(data)
         emitter.emit("render")
     })
 
     emitter.on("home", function() {
+        // reset state
+        state.posts = []
         loadLocal()
     })
 
@@ -260,7 +271,7 @@ app.route("/", function(state, emit) {
         <div class="info-container">
             <div id="dat-key">${state.archiveKey}</div>
             <div id="dat-endpoint">${state.datEndpoint}</div>
-            <div class=${state.fadeInOut} id="feedback">${state.message}</div>
+            <div class=${state.fadeInOut} id="feedback">${state.feedbackMsg}</div>
         </div>
         <div class="header" onclick=${home}>
             ${logo()}
@@ -328,7 +339,7 @@ app.route("/", function(state, emit) {
                     if (cmd === "set" && content.length > 1) {
                         var attribute = content.splice(0, 1)[0]
                         var value = content.join(" ")
-                        state.message = attribute + " updated"
+                        state.feedbackMsg = attribute + " updated"
                         if (attribute === "avatar") {
                             mediaLink(value).then(function(value) {
                                 var httpLink = value["http"]
@@ -339,12 +350,12 @@ app.route("/", function(state, emit) {
                         }
                     } else if (cmd === "save") {
                         var jsonLocation = content.join(" ")
-                        state.message = "now using " + jsonLocation
+                        state.feedbackMsg = "now using " + jsonLocation
                         // save to file
                         rotonde.save(jsonLocation).then(resolve)
                     }  else {
                         content = content.join(" ")
-                        state.message = cmd + " " + content
+                        state.feedbackMsg = cmd + " " + content
                         commands[cmd](content).then(resolve)
                     }
                 }
@@ -374,14 +385,14 @@ app.route("/", function(state, emit) {
         })
         .then(saveArchive)
         .catch(function(err) {
-            state.message = "error: " + err.code
+            state.feedbackMsg = "error: " + err.code
             console.log(err)
         })
         .then(function() {
             state.fadeInOut = "fader"
             setTimeout(function() {
                 state.fadeInOut = ""
-                state.message = "" 
+                state.feedbackMsg = "" 
                 emit("render")
             }, 1200)
             util.data().then(function(data) {
@@ -397,7 +408,6 @@ app.route("/", function(state, emit) {
         })
     }
 })
-
 
 // start app
 app.mount("div")
