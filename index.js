@@ -18,7 +18,7 @@ var util = require("./rotonde-cli/rotonde-utils.js")
 var rotonde = require("./rotonde-cli/rotonde-lib.js")
 // to connect rotonde with dat
 var hyperotonde = require("/Users/cblgh/code/hyperotonde/hyperotonde.js")
-archive = hyperotonde(path.resolve(util.dir, "rotonde.archive"))
+var archive = hyperotonde(path.resolve(util.dir, "rotonde.archive"))
 // parses messages for --url, --media
 var minimist = require("minimist")
 // lets you write nicer `template strings` across line breaks
@@ -326,6 +326,20 @@ app.route("/", function(state, emit) {
             "unfollow": rotonde.unfollow, "endpoint": setDatEndpoint, "home": home
         }
 
+        function createPost(message, argv, resolve) {
+            // create & format post for inside the app
+            var post = {text: message, time: parseInt((new Date).getTime() / 1000)}
+            if (argv.media) post.media = argv.media
+            if (argv.url) post.url = argv.url
+            if (argv.focus) post.focus = argv.focus
+            post = formatPost(post, state.portal, "localhost")
+            // update state
+            state.posts.push(post)
+            emit("addPost")
+            // save post to rotonde.json
+            rotonde.write(message, argv.url, argv.media, argv.focus).then(resolve)
+        }
+
         return new Promise(function(resolve, reject) {
             // we're dealing with a command (or a typo)
             if (message.charAt(0) === "/") {
@@ -360,32 +374,20 @@ app.route("/", function(state, emit) {
                 }
             // the default action is to write to your feed
             } else {
-                function createPost(message, argv) {
-                    // create & format post for inside the app
-                    var post = {text: message, time: parseInt((new Date).getTime() / 1000)}
-                    if (argv.media) post.media = argv.media
-                    if (argv.url) post.url = argv.url
-                    if (argv.focus) post.focus = argv.focus
-                    post = formatPost(post, state.portal, "localhost")
-                    // update state
-                    state.posts.push(post)
-                    emit("addPost")
-                    // save post to rotonde.json
-                    rotonde.write(message, argv.url, argv.media, argv.focus).then(resolve)
-                }
+
                 message = argv._.join(" ")
                 // resolve messages that contain --media 
                 if (argv.media) {
                     // check to see if it was a http link or a path on this computer
                     mediaLink(argv.media).then(function(link) {
                         argv.media = link["http"]
-                        createPost(message, argv)
+                        createPost(message, argv, resolve)
                     }).catch(function(err) {
                         console.error("something went wrong with mediaLink")
                         console.error(err)
                     })
                 } else {
-                    createPost(message, argv)
+                    createPost(message, argv, resolve)
                 }
             }
         })
@@ -403,8 +405,8 @@ app.route("/", function(state, emit) {
             }, 1200)
             util.data().then(function(data) {
                 var portal = data[0]
-                // console shows portal we're at currently,
-                // if that portal is our portal, the update the console information
+                // the console shows which portal we're currently at.
+                // if that portal is our portal, then update the console's information
                 if (state.isHome) {
                     state.placeholder = formatPortalInfo(portal)
                 }
