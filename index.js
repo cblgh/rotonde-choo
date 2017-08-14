@@ -90,6 +90,15 @@ function formatPortalInfo(portal) {
         ${portal.feed.length} entries following ${portal.portal.length}`
 }
 
+function formatPost(post, portal, domain) {
+    // adding its properties to each entry
+    post.avatar = portal.profile.avatar
+    post.color = portal.profile.color
+    post.portal = domain
+    post.name = portal.profile.name
+    return post
+}
+
 app.use(function(state, emitter) {
     state.isHome = true
     // set an empty placeholder for the console's placeholder
@@ -98,8 +107,8 @@ app.use(function(state, emitter) {
     state.datEndpoint = "dat endpoint not configured"
     state.message = ""
     state.fadeInOut = ""
-    // create state.list
-    state.list = []
+    // create state.posts
+    state.posts = []
     loadLocal()
 
     function populateDatHeader() {
@@ -117,6 +126,7 @@ app.use(function(state, emitter) {
         // read local data first, populating the feed
         util.data().then(function(data) {
             var base = data[0]
+            state.portal = base
             processPortals(base)
         })
     }
@@ -130,7 +140,7 @@ app.use(function(state, emitter) {
     function processPortals(base) {
         populateDatHeader()
         // reset state
-        state.list = []
+        state.posts = []
         // for each portal i follow
         state.placeholder = formatPortalInfo(base)
         base.portal.map(function (portalDomain) {
@@ -139,17 +149,12 @@ app.use(function(state, emitter) {
             fetchPortal(portalDomain).then(function(portal) {
                 // then process its entries
                 portal.feed.map(function(entry) {
-                    // adding its properties to each entry
-                    entry.avatar = portal.profile.avatar
-                    entry.color = portal.profile.color
-                    entry.portal = portalDomain
-                    entry.name = portal.profile.name
+                    entry = formatPost(entry, portal, portalDomain)
                     // and pushing it onto our timeline feed
-                    state.list.push(entry)
+                    state.posts.push(entry)
                 })
                 // sort entries with newest at the top of the page
-                state.list.sort(compare)
-                emitter.emit("render")
+                emitter.emit("addPost")
             })
             .catch(function(err) {
                 console.log("err fetching %s", portalDomain)
@@ -177,6 +182,11 @@ app.use(function(state, emitter) {
 
     emitter.on("home", function() {
         loadLocal()
+    })
+
+    emitter.on("addPost", function() {
+        state.posts.sort(compare)
+        emitter.emit("render")
     })
 })
 
@@ -245,7 +255,6 @@ app.route("/", function(state, emit) {
             `
     }
 
-
     return html`
         <div>
         <div class="info-container">
@@ -258,7 +267,7 @@ app.route("/", function(state, emit) {
         </div>
             <div class="container">
                 <div>
-                    ${state.list.map(messageBox)}
+                    ${state.posts.map(messageBox)}
                 </div>
             </div>
             <div class="bar-container">
@@ -341,16 +350,24 @@ app.route("/", function(state, emit) {
                 }
             // the default action is to write to your feed
             } else {
+                function createPost(message) {
+                    var post = {text: message, time: parseInt((new Date).getTime() / 1000)}
+                    post = formatPost(post, state.portal, "localhost")
+                    state.posts.push(post)
+                    emit("addPost")
+                }
                 // if the message had --media <media-path>
                 if (argv.media) {
                     // check to see if it was a http link or a path on this computer
                     mediaLink(argv.media).then(function(link) {
                         message = message.replace(argv.media, link["http"])
+                        createPost(message)
                         rotonde.write(message).then(resolve)
                     }).catch(function() {
                         console.error("noo it didnt exist :<")
                     })
                 } else {
+                    createPost(message)
                     rotonde.write(message).then(resolve)
                 }
             }
