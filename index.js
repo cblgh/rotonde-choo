@@ -139,7 +139,6 @@ app.use(function(state, emitter) {
         util.data().then(function(data) {
             var localPortal = data[0]
             localPortal.feed.map(function(entry) {
-                console.log(entry)
                 addFromFeed(entry, localPortal, "localhost")
             })
             state.portal = localPortal
@@ -361,25 +360,32 @@ app.route("/", function(state, emit) {
                 }
             // the default action is to write to your feed
             } else {
-                function createPost(message) {
+                function createPost(message, argv) {
+                    // create & format post for inside the app
                     var post = {text: message, time: parseInt((new Date).getTime() / 1000)}
+                    if (argv.media) post.media = argv.media
+                    if (argv.url) post.url = argv.url
+                    if (argv.focus) post.focus = argv.focus
                     post = formatPost(post, state.portal, "localhost")
+                    // update state
                     state.posts.push(post)
                     emit("addPost")
+                    // save post to rotonde.json
+                    rotonde.write(message, argv.url, argv.media, argv.focus).then(resolve)
                 }
-                // if the message had --media <media-path>
+                message = argv._.join(" ")
+                // resolve messages that contain --media 
                 if (argv.media) {
                     // check to see if it was a http link or a path on this computer
                     mediaLink(argv.media).then(function(link) {
-                        message = message.replace(argv.media, link["http"])
-                        createPost(message)
-                        rotonde.write(message).then(resolve)
-                    }).catch(function() {
-                        console.error("noo it didnt exist :<")
+                        argv.media = link["http"]
+                        createPost(message, argv)
+                    }).catch(function(err) {
+                        console.error("something went wrong with mediaLink")
+                        console.error(err)
                     })
                 } else {
-                    createPost(message)
-                    rotonde.write(message).then(resolve)
+                    createPost(message, argv)
                 }
             }
         })
