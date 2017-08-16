@@ -125,7 +125,7 @@ app.use(function(state, emitter) {
     loadLocal()
 
     function populateDatHeader() {
-        archive.key().then(function(key) {
+        return archive.key().then(function(key) {
             state.archiveKey = key
             return util.settings()
         })
@@ -136,8 +136,11 @@ app.use(function(state, emitter) {
 
     function loadLocal() {
         state.isHome = true
-        // read local data first, populating the feed
-        util.data().then(function(data) {
+        populateDatHeader().then(function() {
+            return util.data()
+        })
+        // read local data, populating the feed
+        .then(function(data) {
             var localPortal = data[0]
             localPortal.feed.map(function(entry) {
                 addFromFeed(entry, localPortal, "localhost")
@@ -348,7 +351,7 @@ app.route("/", function(state, emit) {
         }
 
         // hax to update immediately if colour is changed, for a better exp
-        var colorChanged = false
+        var importantAttrChanged = false
         return new Promise(function(resolve, reject) {
             // we're dealing with a command (or a typo)
             if (message.charAt(0) === "/") {
@@ -361,8 +364,8 @@ app.route("/", function(state, emit) {
                     if (cmd === "set" && content.length > 1) {
                         var attribute = content.splice(0, 1)[0]
                         var value = content.join(" ")
-                        if (attribute === "color") {
-                            colorChanged = true
+                        if (attribute === "color" || attribute === "name") {
+                            importantAttrChanged = true
                         }
                         state.feedbackMsg = attribute + " updated"
                         if (attribute === "avatar") {
@@ -420,7 +423,7 @@ app.route("/", function(state, emit) {
                 // if that portal is our portal, then update the console's information
                 if (state.isHome) {
                     state.placeholder = formatPortalInfo(portal)
-                    if (colorChanged) {
+                    if (importantAttrChanged) {
                         emit("home") // hax to update colour of all our entries immediately
                     }
                 }
