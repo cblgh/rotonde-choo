@@ -17,6 +17,7 @@
     "dedent": "^0.7.0",
     "del": "^3.0.0",
     "electron": "^1.6.11",
+    "electron-context-menu": "^0.9.1",
     "hyperotonde": "github:cblgh/hyperotonde",
     "minimist": "^1.2.0",
     "osenv": "^0.1.4",
