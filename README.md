@@ -16,11 +16,13 @@ _a rotonde client written with choo, electron & dat_
   * Right-click https:// (or press the little clipboard) to copy the Hashbase archive url.
   
   
-    The copied url will look like `https://yourarchive-username.hashbase.io`.
+    The copied url will look like `https://rotonde-username.hashbase.io`.   
+    
+    _if you filled in something else in the Name box above your url will reflect what you wrote instead_
  
  * Then do the following in Rotonde
  ```
-    /endpoint https://yourarchive-username.hashbase.io (this is the Hashbase archive url from before)
+    /endpoint https://rotonde-username.hashbase.io (this is the Hashbase archive url from before)
     /save /absolute/path/you/want/for/rotonde.json (you can skip this part, defaults to ~/.config/rotonde/rotonde.json)
     /set name your name
     /set color #24292E (or whatever color you want)
@@ -32,7 +34,7 @@ _a rotonde client written with choo, electron & dat_
  * And you're done, time to start using it
 ## Tips
  * To write a message, click in the console > and write something. Press enter to published to your portal.
- * If you want people to follow you, share your archive url (if you set it with /endpoint https://yourarchive-username.hashbase.io it will be in the top right corner of Rotonde, below the long id)
+ * If you want people to follow you, share your archive url (if you set it with /endpoint https://rotonde-username.hashbase.io it will be in the top right corner of Rotonde, below the long id)
  * Click on @rotonde.domains within Rotonde to see the portals of others
  * Upload an avatar directly from your computer using `/set avatar /absolute/path/to/picture.png`
  * Be sure to always use /absolute/paths and not ./path or ~/path, at least for the current version
