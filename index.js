@@ -350,8 +350,7 @@ app.route("/", function(state, emit) {
             rotonde.write(message, argv.url, argv.media, argv.focus).then(resolve)
         }
 
-        // hax to update immediately if colour is changed, for a better exp
-        var importantAttrChanged = false
+        var commandIssued = false
         return new Promise(function(resolve, reject) {
             // we're dealing with a command (or a typo)
             if (message.charAt(0) === "/") {
@@ -360,12 +359,15 @@ app.route("/", function(state, emit) {
                 var content = parts
 
                 if (cmd in commands) {
+                    commandIssued = true
                     // set <color|location|name>=<value> for properties
                     if (cmd === "set" && content.length > 1) {
                         var attribute = content.splice(0, 1)[0]
                         var value = content.join(" ")
-                        if (attribute === "color" || attribute === "name") {
-                            importantAttrChanged = true
+                        if (["location", "position"].indexOf(attribute) >= 0) {
+                            // don't issue a redraw for these commands
+                            // as it doesn't provide anything, and is only annoying
+                            commandIssued = false 
                         }
                         state.feedbackMsg = attribute + " updated"
                         if (attribute === "avatar") {
@@ -423,8 +425,8 @@ app.route("/", function(state, emit) {
                 // if that portal is our portal, then update the console's information
                 if (state.isHome) {
                     state.placeholder = formatPortalInfo(portal)
-                    if (importantAttrChanged) {
-                        emit("home") // hax to update colour of all our entries immediately
+                    if (commandIssued) {
+                        emit("home") 
                     }
                 }
                 // redraw page
