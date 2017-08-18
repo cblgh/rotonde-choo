@@ -14,10 +14,10 @@ var $ = document.getElementById.bind(document)
 //  manage files and URLs using their default applications
 var shell = require("electron").shell
 // to handle the rotonde specific stuff
-var util = require("./rotonde-cli/rotonde-utils.js")
-var rotonde = require("./rotonde-cli/rotonde-lib.js")
+var util = require("rotonde-cli/rotonde-utils.js")
+var rotonde = require("rotonde-cli/rotonde-lib.js")
 // to connect rotonde with dat
-var hyperotonde = require("/Users/cblgh/code/hyperotonde/hyperotonde.js")
+var hyperotonde = require("hyperotonde")
 var archive = hyperotonde(path.resolve(util.dir, "rotonde.archive"))
 // parses messages for --url, --media
 var minimist = require("minimist")

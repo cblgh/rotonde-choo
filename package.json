@@ -6,9 +6,9 @@
   "main": "main.js",
   "scripts": {
     "start": "nodemon -x budo --live --pushstate index.js:bundle.js -p 3000 --no-debug -- -b bundle-collapser/plugin -g unassertify -g yo-yoify -g uglifyify",
-     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=./icons/rotonde.icns --prune=true --out=release-builds",
-      "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=./icons/rotonde.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Rotonde\"",
-       "package-linux" : "electron-packager . --overwrite --platform=linux --arch=x64 --icon=./icons/rotonde.png --prune=true --out=release-builds"
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=./icons/rotonde.icns --prune=true --out=release-builds",
+    "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=./icons/rotonde.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Rotonde\"",
+    "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=./icons/rotonde.png --prune=true --out=release-builds"
   },
   "license": "MIT",
   "dependencies": {
@@ -19,6 +19,8 @@
     "electron": "^1.6.11",
     "hyperotonde": "github:cblgh/hyperotonde",
     "minimist": "^1.2.0",
+    "osenv": "^0.1.4",
+    "rotonde-cli": "github:cblgh/rotonde-cli",
     "uglifyify": "^3.0.4",
     "unassertify": "^2.0.4",
     "valid-url": "^1.0.9",
