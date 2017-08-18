@@ -19,6 +19,7 @@ _a rotonde client written with choo, electron & dat_
     The copied url will look like `https://rotonde-username.hashbase.io`.   
     
     _if you filled in something else in the Name box above your url will reflect what you wrote instead_
+  * Wait until the progress bar has reached 100%. _(if it takes more than a minute and it's still at 0%, something is wrong)_ 
  
  * Then do the following in Rotonde
  ```
