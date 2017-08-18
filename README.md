@@ -29,10 +29,11 @@ _a rotonde client written with choo, electron & dat_
     /set color #24292E (or whatever color you want)
     /set location the internet
     /set avatar https://link-to.picture 
-     or
-     /set avatar /path/to/picture
+         or
+    /set avatar /path/to/picture
    ```
  * And you're done, time to start using it
+ 
 ## Tips
  * To write a message, click in the console > and write something. Press enter to published to your portal.
  * If you want people to follow you, share your archive url (if you set it with /endpoint https://rotonde-username.hashbase.io it will be in the top right corner of Rotonde, below the long id)
