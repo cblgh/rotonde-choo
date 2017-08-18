@@ -36,6 +36,7 @@ _a rotonde client written with choo, electron & dat_
  * Click on @rotonde.domains within Rotonde to see the portals of others
  * Upload an avatar directly from your computer using `/set avatar /absolute/path/to/picture.png`
  * Be sure to always use /absolute/paths and not ./path or ~/path, at least for the current version
+ * If something weird happens, let [cblgh](https://twitter.com/cblgh) know, and then do /home to clear it
    
 ## Reference sheet
 ```
