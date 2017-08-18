@@ -3,10 +3,8 @@ _a rotonde client written with choo, electron & dat_
 
 ![client](http://i.imgur.com/Gl9KfwE.jpg)
 
-## Getting started
-### `npm install && npm start`
 
-## Setup
+## Getting started
 ### [Currently OSX only]
 * [Download the latest Rotonde build](https://cblgh.org/dl/rotonde-mac.zip)
 * Unzip & open Rotonde.app, copy the long id in the top right
