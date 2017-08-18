@@ -12,7 +12,7 @@ _a rotonde client written with choo, electron & dat_
   * Having created an account, click [Login](https://hashbase.io/login)
   * Click on [*Upload archive*](https://hashbase.io/new-archive)
   * In the URL box, give it the long id from before. (This is called the archive key)
-  * You can skip the Name box
+  * Write `rotonde` in the Name box
   * Right-click https:// (or press the little clipboard) to copy the Hashbase archive url.
   
   
