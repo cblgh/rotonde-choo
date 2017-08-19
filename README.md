@@ -21,7 +21,9 @@ _a rotonde client written with choo, electron & dat_
     The copied url will look like `https://rotonde-username.hashbase.io`.   
     
     _if you filled in something else in the Name box above your url will reflect what you wrote instead_
-  * Wait until the progress bar has reached 100%. _(if it takes more than a minute and it's still at 0%, something is wrong)_ 
+  * Check back in a while to make sure that the progress bar has reached 100%. If it's still at 0% after 15-30 minutes (and you've kept your Rotonde client open) something might be wrong and you should tell [cblgh](https://twitter.com/cblgh) about it.
+  
+  You can continue to setup your Rotonde client according to the instructions below even if the progress bar is at 0%. Nothing will be lost.
  
  * Then do the following in Rotonde
  ```
