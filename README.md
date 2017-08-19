@@ -57,6 +57,11 @@ When writing, you can add a url per the [Spec](https://github.com/Rotonde/Specs)
 You can also add media with `--media https://link.to.media` or `--media /absolute/path/to/media.png`  
 `> practicing illustration --media /Users/cblgh/illustration/123.png`
 
+Finally, you can add the day's [focus rating](https://github.com/Rotonde/Specs#focusexample) with --focus   
+`> researched dat --focus 0.4` 
+_(actually untested so maybe this doesn't work ehe)_
+
+
 ## Reference sheet
 ```
 /save /path/to/rotonde.json
