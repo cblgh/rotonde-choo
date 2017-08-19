@@ -10,10 +10,16 @@ _a rotonde client written with choo, electron & dat_
 ### [Currently OSX only]
 * [Download the latest Rotonde build](https://cblgh.org/dl/rotonde-mac.zip)
 * Unzip & open Rotonde.app, copy the long id in the top right
+* Set your basic profile information
+    ```
+    /set name your name
+    /set color #24292E (or whatever color you want)
+    /set location the internet
+    ```
 * Then create a [Hashbase](https://hashbase.io) account
   * Having created an account, click [Login](https://hashbase.io/login)
   * Click on [*Upload archive*](https://hashbase.io/new-archive)
-  * In the URL box, give it the long id from before. (This is called the archive key)
+  * In the URL box, give it the long id from before. (This is called the archive key.)
   * Write `rotonde` in the Name box
   * Right-click https:// (or press the little clipboard) to copy the Hashbase archive url.
   
@@ -29,9 +35,6 @@ _a rotonde client written with choo, electron & dat_
  ```
     /endpoint https://rotonde-username.hashbase.io (this is the Hashbase archive url from before)
     /save /absolute/path/you/want/for/rotonde.json (you can skip this part, defaults to ~/.config/rotonde/rotonde.json)
-    /set name your name
-    /set color #24292E (or whatever color you want)
-    /set location the internet
     /set avatar https://link-to.picture 
          or
     /set avatar /path/to/picture
