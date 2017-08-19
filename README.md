@@ -7,8 +7,8 @@ _a rotonde client written with choo, electron & dat_
 
 
 ## Getting started
-### [Currently OSX only]
-* [Download the latest Rotonde build](https://cblgh.org/dl/rotonde-mac.zip)
+### [Currently OSX & Linux]
+* Download the latest Rotonde build: [OSX](https://cblgh.org/dl/rotonde-mac.zip), [Linux](https://t.co/Z9ZThOFEsA)
 * Unzip & open Rotonde.app, copy the long id in the top right
 * Set your basic profile information
     ```
