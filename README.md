@@ -1,6 +1,8 @@
 # rotonde-choo
 _a rotonde client written with choo, electron & dat_
 
+
+
 ![client](http://i.imgur.com/Gl9KfwE.jpg)
 
 
@@ -35,17 +37,30 @@ _a rotonde client written with choo, electron & dat_
  * And you're done, time to start using it
  
 ## Tips
- * To write a message, click in the console > and write something. Press enter to published to your portal.
- * If you want people to follow you, share your archive url (if you set it with /endpoint https://rotonde-username.hashbase.io it will be in the top right corner of Rotonde, below the long id)
+ * To write a message, click in the console > and write something. Press enter to publish to your portal.
+ * If you want people to follow you, share your archive url (if you set it with `/endpoint https://rotonde-username.hashbase.io` it will be in the top right corner of Rotonde, below the long id)
  * Click on @rotonde.domains within Rotonde to see the portals of others
  * Upload an avatar directly from your computer using `/set avatar /absolute/path/to/picture.png`
  * Be sure to always use /absolute/paths and not ./path or ~/path, at least for the current version
  * If something weird happens, let [cblgh](https://twitter.com/cblgh) know, and then do /home to clear it
-   
+
+## Writing
+When writing, you can add a url per the [Spec](https://github.com/Rotonde/Specs) using `--url https://your.link`  
+`> today i released the first version of choo rotonde --url https://github.com/cblgh/rotonde-choo`
+
+You can also add media with `--media https://link.to.media` or `--media /absolute/path/to/media.png`  
+`> practicing illustration --media /Users/cblgh/illustration/123.png`
+
 ## Reference sheet
 ```
 /save /path/to/rotonde.json
+  set where your rotonde.json resides on your system, the default is ~/.config/rotonde/rotonde.json
+  
 /endpoint https://yourarchive-username.hashbase.io
+  set the hashbase url
+  used mainly when uploading media from the local filesystem with 
+    * /set avatar /path/to/png 
+    * <message> --media /path/to/media
 
 /follow rotonde.portal.domain
 e.g. /follow rotonde.cblgh.org
@@ -57,10 +72,9 @@ e.g. /follow rotonde.cblgh.org
 /set avatar /absolute/path/to/picture.png
   or 
 /set avatar https://link/to/picture.png
+
 /home 
   go back to your portal, useful after you have been clicking around on the @portal.domains
-
-
 ```
 
 
