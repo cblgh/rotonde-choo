@@ -63,30 +63,35 @@ _(actually untested so maybe this doesn't work ehe)_
 
 
 ## Reference sheet
-```
-/save /path/to/rotonde.json
-  set where your rotonde.json resides on your system, the default is ~/.config/rotonde/rotonde.json
+
+#### `/save /your/path/to/rotonde.json`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set where your rotonde.json resides on your system, the default is ~/.config/rotonde/rotonde.json
   
-/endpoint https://yourarchive-username.hashbase.io
-  set the hashbase url
-  used mainly when uploading media from the local filesystem with 
+#### `/endpoint https://yourarchive-username.hashbase.io`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set the hashbase url   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;used mainly when uploading media from the local filesystem with 
     * /set avatar /path/to/png 
     * <message> --media /path/to/media
 
-/follow rotonde.portal.domain
-  e.g. /follow rotonde.cblgh.org
-/unfollow rotonde.portal.domain
+#### `/follow rotonde.portal.domain`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.g. /follow rotonde.cblgh.org
+#### `/unfollow rotonde.portal.domain`
 
-/set name your name
-/set location hell
-/set color #343434
-/set avatar /absolute/path/to/picture.png
-  or 
-/set avatar https://link/to/picture.png
+#### `/set name your name`
+#### `/set location Yajnevth`
+#### `/set color #343434`
+#### `/set avatar /absolute/path/to/picture.png`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;or 
+#### `/set avatar https://link/to/picture.png`
 
-/home 
-  go back to your portal, useful after you have been clicking around on the @portal.domains
-```
+#### `/home`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;go back to your portal, useful after you have been clicking around on the @portal.domains
+
+
+
+
+
+
 
 
 
