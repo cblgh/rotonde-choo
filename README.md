@@ -19,12 +19,12 @@ _a rotonde client written with choo, electron & dat_
 * Then create a [Hashbase](https://hashbase.io) account
   * Having created an account, click [Login](https://hashbase.io/login)
   * Click on [*Upload archive*](https://hashbase.io/new-archive)
-  * In the URL box, give it the long id from before. (This is called the archive key.)
+  * In the URL box, give it the long id from before (This is called the archive key)
   * Write `rotonde` in the Name box
-  * Right-click https:// (or press the little clipboard) to copy the Hashbase archive url.
+  * Right-click https:// (or press the little clipboard) to copy the Hashbase archive url
   
   
-    The copied url will look like `https://rotonde-username.hashbase.io`.   
+    The copied url will look like `https://rotonde-username.hashbase.io`   
     
     _if you filled in something else in the Name box above your url will reflect what you wrote instead_
   * Check back in a while to make sure that the progress bar has reached 100%. If it's still at 0% after 15-30 minutes (and you've kept your Rotonde client open) something might be wrong and you should tell [cblgh](https://twitter.com/cblgh) about it.
@@ -51,13 +51,13 @@ _a rotonde client written with choo, electron & dat_
  * If something weird happens, let [cblgh](https://twitter.com/cblgh) know, and then do /home to clear it
 
 ## Writing
-When writing, you can add a url per the [Spec](https://github.com/Rotonde/Specs) using `--url https://your.link`  
+When writing, you can add a url per the [Spec](https://github.com/Rotonde/Specs) using `--url https://your.link`:  
 `> today i released the first version of choo rotonde --url https://github.com/cblgh/rotonde-choo`
 
-You can also add media with `--media https://link.to.media` or `--media /absolute/path/to/media.png`  
+You can also add media with `--media https://link.to.media` or `--media /absolute/path/to/media.png`:  
 `> practicing illustration --media /Users/cblgh/illustration/123.png`
 
-Finally, you can add the day's [focus rating](https://github.com/Rotonde/Specs#focusexample) with --focus   
+Finally, you can add the day's [focus rating](https://github.com/Rotonde/Specs#focusexample) with --focus:   
 `> researched dat --focus 0.4` 
 _(actually untested so maybe this doesn't work ehe)_
 
@@ -74,7 +74,7 @@ _(actually untested so maybe this doesn't work ehe)_
     * <message> --media /path/to/media
 
 /follow rotonde.portal.domain
-e.g. /follow rotonde.cblgh.org
+  e.g. /follow rotonde.cblgh.org
 /unfollow rotonde.portal.domain
 
 /set name your name
