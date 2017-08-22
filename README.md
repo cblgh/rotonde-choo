@@ -64,7 +64,17 @@ _(actually untested so maybe this doesn't work ehe)_
 
 
 ## Reference sheet
+### Settings
+The settings file is located at `~/.config/rotonde/.rotonde` and contains 
+```json
+{
+    "rotonde location": "/path/to/rotonde.json",
+    "dat endpoint": "http://subdomain-user.hashbase.io"
+}
+```
+You may write your own client and read/update the settings file's `"rotonde location"`, allowing for [fungible](http://www.dictionary.com/browse/fungible) clients.
 
+### Commands
 #### `/save /your/path/to/rotonde.json`
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set where your rotonde.json resides on your system, the default is ~/.config/rotonde/rotonde.json
   
