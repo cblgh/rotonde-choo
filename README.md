@@ -8,7 +8,7 @@ _a rotonde client written with choo, electron & dat_
 
 ## Getting started
 ### [Currently OSX & Linux]
-* Download the latest Rotonde build: [OSX](https://cblgh.org/dl/rotonde-mac.zip), [Linux](https://t.co/Z9ZThOFEsA)
+* Download the latest Rotonde build: [OSX](https://cblgh.org/dl/rotonde-mac.zip), [Linux](http://cblgh.org/dl/rotonde-linux.zip)
 * Unzip & open Rotonde.app, copy the long id in the top right
 * Set your basic profile information
     ```
@@ -18,7 +18,7 @@ _a rotonde client written with choo, electron & dat_
     ```
 * Then create a [Hashbase](https://hashbase.io) account
   * Having created an account, click [Login](https://hashbase.io/login)
-  * Click on [*Upload archive*](https://hashbase.io/new-archive)
+  * Click on [Upload archive](https://hashbase.io/new-archive)
   * In the URL box, give it the long id from before (This is called the archive key)
   * Write `rotonde` in the Name box
   * Right-click https:// (or press the little clipboard) to copy the Hashbase archive url
